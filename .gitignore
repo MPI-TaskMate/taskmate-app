@@ -137,3 +137,40 @@ dist
 # Vite logs files
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
+
+
+# =========================
+# .NET / ASP.NET Core
+# =========================
+
+bin/
+obj/
+
+# User-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Visual Studio
+.vs/
+
+# Rider
+.idea/
+
+# Logs
+*.log
+
+# ASP.NET Core
+appsettings.Development.json
+
+# Publish output
+publish/
+
+# NuGet
+*.nupkg
+.nuget/
+
+# OS files
+Thumbs.db
+.DS_Store
