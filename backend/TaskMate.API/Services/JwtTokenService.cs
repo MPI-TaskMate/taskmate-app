@@ -18,26 +18,38 @@ namespace TaskMate.API.Services
         public string GenerateToken(User user)
         {
             var jwtSettings = _configuration.GetSection("Jwt");
+
             var key = jwtSettings["Key"]!;
+            var issuer = jwtSettings["Issuer"];
+            var audience = jwtSettings["Audience"];
+            var expiresInHours = double.Parse(jwtSettings["ExpiresInHours"] ?? "24");
 
             var claims = new List<Claim>
             {
+                // Standard claims
                 new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
                 new Claim(JwtRegisteredClaimNames.Email, user.Email),
+
+                // Custom claims (VERY IMPORTANT pentru backend-ul tău)
+                new Claim("userId", user.Id.ToString()),
+
+                // .NET friendly claims
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new Claim(ClaimTypes.Email, user.Email)
             };
 
+            var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key));
+
             var signingCredentials = new SigningCredentials(
-                new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key)),
+                signingKey,
                 SecurityAlgorithms.HmacSha256
             );
 
             var token = new JwtSecurityToken(
-                issuer: jwtSettings["Issuer"],
-                audience: jwtSettings["Audience"],
+                issuer: issuer,
+                audience: audience,
                 claims: claims,
-                expires: DateTime.UtcNow.AddDays(7),
+                expires: DateTime.UtcNow.AddHours(expiresInHours),
                 signingCredentials: signingCredentials
             );
 
