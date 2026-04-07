@@ -21,6 +21,7 @@ namespace TaskMate.API.Data
         {
             base.OnModelCreating(modelBuilder);
 
+            // ================= USER =================
             modelBuilder.Entity<User>(entity =>
             {
                 entity.HasKey(u => u.Id);
@@ -36,9 +37,97 @@ namespace TaskMate.API.Data
                     .IsRequired();
 
                 entity.HasIndex(u => u.Email)
-                    .IsUnique(); 
+                    .IsUnique();
+
+                entity.HasMany(u => u.Subjects)
+                    .WithOne(s => s.User)
+                    .HasForeignKey(s => s.UserId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasMany(u => u.Tasks)
+                    .WithOne(t => t.User)
+                    .HasForeignKey(t => t.UserId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasMany(u => u.Tags)
+                    .WithOne(t => t.User)
+                    .HasForeignKey(t => t.UserId)
+                    .OnDelete(DeleteBehavior.Cascade);
             });
 
+            // ================= SUBJECT =================
+            modelBuilder.Entity<Subject>(entity =>
+            {
+                entity.HasKey(s => s.Id);
+
+                entity.Property(s => s.Name)
+                    .IsRequired()
+                    .HasMaxLength(100);
+
+                entity.Property(s => s.Color)
+                    .HasMaxLength(20);
+
+                entity.HasIndex(s => new { s.UserId, s.Name });
+
+                entity.HasOne(s => s.User)
+                    .WithMany(u => u.Subjects)
+                    .HasForeignKey(s => s.UserId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasMany(s => s.Tasks)
+                    .WithOne(t => t.Subject)
+                    .HasForeignKey(t => t.SubjectId)
+                    .OnDelete(DeleteBehavior.SetNull); // 🔥 important
+            });
+
+            // ================= TASK =================
+            modelBuilder.Entity<TaskItem>(entity =>
+            {
+                entity.HasKey(t => t.Id);
+
+                entity.Property(t => t.Title)
+                    .IsRequired()
+                    .HasMaxLength(200);
+
+                entity.Property(t => t.Description)
+                    .HasMaxLength(1000);
+
+                entity.Property(t => t.CreatedAt)
+                    .IsRequired();
+
+                entity.HasIndex(t => t.DueDate);
+                entity.HasIndex(t => t.Status);
+                entity.HasIndex(t => t.Priority);
+
+                entity.HasOne(t => t.User)
+                    .WithMany(u => u.Tasks)
+                    .HasForeignKey(t => t.UserId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasOne(t => t.Subject)
+                    .WithMany(s => s.Tasks)
+                    .HasForeignKey(t => t.SubjectId)
+                    .OnDelete(DeleteBehavior.NoAction);
+            });
+
+            // ================= TAG =================
+            modelBuilder.Entity<Tag>(entity =>
+            {
+                entity.HasKey(t => t.Id);
+
+                entity.Property(t => t.Name)
+                    .IsRequired()
+                    .HasMaxLength(100);
+
+                entity.HasIndex(t => new { t.UserId, t.Name });
+
+                entity.HasOne(t => t.User)
+                    .WithMany(u => u.Tags)
+                    .HasForeignKey(t => t.UserId)
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            // ================= TASK TAG (MANY-TO-MANY) =================
             modelBuilder.Entity<TaskTag>(entity =>
             {
                 entity.HasKey(tt => new { tt.TaskId, tt.TagId });
@@ -52,23 +141,6 @@ namespace TaskMate.API.Data
                     .WithMany(t => t.TaskTags)
                     .HasForeignKey(tt => tt.TagId)
                     .OnDelete(DeleteBehavior.NoAction);
-            });
-
-            modelBuilder.Entity<TaskItem>(entity =>
-            {
-                entity.HasIndex(t => t.DueDate);
-                entity.HasIndex(t => t.Status);
-                entity.HasIndex(t => t.Priority);
-            });
-
-            modelBuilder.Entity<Subject>(entity =>
-            {
-                entity.HasIndex(s => new { s.UserId, s.Name });
-            });
-
-            modelBuilder.Entity<Tag>(entity =>
-            {
-                entity.HasIndex(t => new { t.UserId, t.Name });
             });
         }
     }
