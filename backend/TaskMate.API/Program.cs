@@ -54,6 +54,8 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
+builder.Services.AddAuthorization();
+
 builder.Services.AddScoped<JwtTokenService>();
 
 var app = builder.Build();
@@ -68,7 +70,8 @@ app.UseCors("AllowFrontend");
 
 app.UseHttpsRedirection();
 
-app.UseAuthentication(); 
+app.UseAuthentication();
+app.UseAuthorization(); 
 
 app.MapControllers();
 
