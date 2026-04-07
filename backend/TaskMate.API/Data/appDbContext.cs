@@ -10,6 +10,7 @@ namespace TaskMate.API.Data
         {
         }
 
+        // DbSets
         public DbSet<User> Users => Set<User>();
         public DbSet<Subject> Subjects => Set<Subject>();
         public DbSet<TaskItem> Tasks => Set<TaskItem>();
@@ -20,37 +21,55 @@ namespace TaskMate.API.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.Entity<TaskTag>()
-                .HasKey(tt => new { tt.TaskId, tt.TagId });
+            modelBuilder.Entity<User>(entity =>
+            {
+                entity.HasKey(u => u.Id);
 
-            modelBuilder.Entity<TaskTag>()
-                .HasOne(tt => tt.Task)
-                .WithMany(t => t.TaskTags)
-                .HasForeignKey(tt => tt.TaskId)
-                .OnDelete(DeleteBehavior.NoAction);
+                entity.Property(u => u.Email)
+                    .IsRequired()
+                    .HasMaxLength(255);
 
-            modelBuilder.Entity<TaskTag>()
-                .HasOne(tt => tt.Tag)
-                .WithMany(t => t.TaskTags)
-                .HasForeignKey(tt => tt.TagId)
-                .OnDelete(DeleteBehavior.NoAction);
+                entity.Property(u => u.PasswordHash)
+                    .IsRequired();
 
-            modelBuilder.Entity<TaskItem>()
-                .HasIndex(t => t.DueDate);
+                entity.Property(u => u.CreatedAt)
+                    .IsRequired();
 
-            modelBuilder.Entity<TaskItem>()
-                .HasIndex(t => t.Status);
+                entity.HasIndex(u => u.Email)
+                    .IsUnique(); 
+            });
 
-            modelBuilder.Entity<TaskItem>()
-                .HasIndex(t => t.Priority);
+            modelBuilder.Entity<TaskTag>(entity =>
+            {
+                entity.HasKey(tt => new { tt.TaskId, tt.TagId });
 
-            modelBuilder.Entity<Subject>()
-                .HasIndex(s => new { s.UserId, s.Name })
-                .IsUnique(false);
+                entity.HasOne(tt => tt.Task)
+                    .WithMany(t => t.TaskTags)
+                    .HasForeignKey(tt => tt.TaskId)
+                    .OnDelete(DeleteBehavior.NoAction);
 
-            modelBuilder.Entity<Tag>()
-                .HasIndex(t => new { t.UserId, t.Name })
-                .IsUnique(false);
+                entity.HasOne(tt => tt.Tag)
+                    .WithMany(t => t.TaskTags)
+                    .HasForeignKey(tt => tt.TagId)
+                    .OnDelete(DeleteBehavior.NoAction);
+            });
+
+            modelBuilder.Entity<TaskItem>(entity =>
+            {
+                entity.HasIndex(t => t.DueDate);
+                entity.HasIndex(t => t.Status);
+                entity.HasIndex(t => t.Priority);
+            });
+
+            modelBuilder.Entity<Subject>(entity =>
+            {
+                entity.HasIndex(s => new { s.UserId, s.Name });
+            });
+
+            modelBuilder.Entity<Tag>(entity =>
+            {
+                entity.HasIndex(t => new { t.UserId, t.Name });
+            });
         }
     }
 }
