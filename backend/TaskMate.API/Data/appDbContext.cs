@@ -95,7 +95,7 @@ namespace TaskMate.API.Data
                 entity.Property(t => t.CreatedAt)
                     .IsRequired();
 
-                entity.HasIndex(t => t.DueDate);
+                entity.HasIndex(t => t.Deadline);
                 entity.HasIndex(t => t.Status);
                 entity.HasIndex(t => t.Priority);
 
