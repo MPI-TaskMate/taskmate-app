@@ -13,6 +13,7 @@ namespace TaskMate.API.Models.Entities
         public string PasswordHash { get; set; } = string.Empty;
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
+        public ICollection<Tag> Tags { get; set; } = new List<Tag>();
         public ICollection<Subject> Subjects { get; set; } = new List<Subject>();
         public ICollection<TaskItem> Tasks { get; set; } = new List<TaskItem>();
     }
