@@ -1,4 +1,4 @@
-export default function HomePage() {
+export default function DashboardPage() {
   return (
     <div>
       <h1>TaskMate</h1>
