@@ -1,6 +1,6 @@
 import { useState, type ChangeEvent, type FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { loginUser } from "../services/authService";
+import { useAuth } from "../context/AuthContext";
 import { useTyping } from "../hooks/useTyping";
 import styles from "../styles/auth.module.css";
 
@@ -17,6 +17,8 @@ type FormErrors = {
 
 export default function LoginPage() {
   const navigate = useNavigate();
+
+  const { login } = useAuth();
 
   const [form, setForm] = useState<FormData>({
     email: "",
@@ -65,14 +67,7 @@ export default function LoginPage() {
 
     try {
       setLoading(true);
-
-      const res = await loginUser({
-        email: form.email,
-        password: form.password,
-      });
-
-      localStorage.setItem("token", res.token);
-
+      await login(form.email, form.password);
       navigate("/dashboard");
     } catch (err: any) {
       setErrors({
