@@ -1,6 +1,6 @@
 import { useState, type ChangeEvent, type FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../hooks/useAuth";
 import { useTyping } from "../hooks/useTyping";
 import styles from "../styles/auth.module.css";
 
@@ -17,7 +17,6 @@ type FormErrors = {
 
 export default function LoginPage() {
   const navigate = useNavigate();
-
   const { login } = useAuth();
 
   const [form, setForm] = useState<FormData>({
@@ -62,17 +61,18 @@ export default function LoginPage() {
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-
     if (!validate()) return;
 
     try {
       setLoading(true);
       await login(form.email, form.password);
       navigate("/dashboard");
-    } catch (err: any) {
-      setErrors({
-        general: err.message,
-      });
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setErrors({ general: err.message });
+      } else {
+        setErrors({ general: "Something went wrong" });
+      }
     } finally {
       setLoading(false);
     }
@@ -86,9 +86,11 @@ export default function LoginPage() {
           <p className={styles.typingText}>{typedSubtitle}</p>
         </div>
       </div>
+
       <div className={styles.right}>
         <div className={styles.formWrapper}>
           <h1 className={styles.title}>Login</h1>
+
           <form className={styles.form} onSubmit={handleSubmit}>
             <div className={styles.field}>
               <input
@@ -102,6 +104,7 @@ export default function LoginPage() {
               <label>Email</label>
               {errors.email && <p className={styles.error}>{errors.email}</p>}
             </div>
+
             <div className={styles.field}>
               <input
                 name="password"
@@ -116,13 +119,16 @@ export default function LoginPage() {
                 <p className={styles.error}>{errors.password}</p>
               )}
             </div>
+
             {errors.general && (
               <p className={styles.error}>{errors.general}</p>
             )}
+
             <button className={styles.button} disabled={loading}>
               {loading ? "Logging in..." : "Login"}
             </button>
           </form>
+
           <p className={styles.link}>
             Don’t have an account? <Link to="/register">Create one</Link>
           </p>

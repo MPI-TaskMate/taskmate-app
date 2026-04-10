@@ -23,10 +23,12 @@ export function getAuthHeaders() {
   };
 }
 
-export async function registerUser(data: RegisterRequest): Promise<AuthResponse> {
+export async function registerUser(
+  data: RegisterRequest
+): Promise<AuthResponse> {
   const response = await fetch(`${API_BASE_URL}/auth/register`, {
     method: "POST",
-    headers: { "Content-Type": "application/json", },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       email: data.email.trim(),
       password: data.password,
@@ -38,22 +40,20 @@ export async function registerUser(data: RegisterRequest): Promise<AuthResponse>
 
     try {
       const errorData = await response.json();
-
-      if (errorData?.message) {
-        message = errorData.message;
-      }
-    } catch {
-
+      if (errorData?.message) message = errorData.message;
+    } catch (e) {
+      console.error(e);
     }
 
     throw new Error(message);
   }
 
-  const result: AuthResponse = await response.json();
-  return result;
+  return await response.json();
 }
 
-export async function loginUser(data: LoginRequest): Promise<AuthResponse> {
+export async function loginUser(
+  data: LoginRequest
+): Promise<AuthResponse> {
   const response = await fetch(`${API_BASE_URL}/auth/login`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -68,15 +68,13 @@ export async function loginUser(data: LoginRequest): Promise<AuthResponse> {
 
     try {
       const errorData = await response.json();
-
-      if (errorData?.message) {
-        message = errorData.message;
-      }
-    } catch {}
+      if (errorData?.message) message = errorData.message;
+    } catch (e) {
+      console.error(e);
+    }
 
     throw new Error(message);
   }
 
-  const result: AuthResponse = await response.json();
-  return result;
+  return await response.json();
 }

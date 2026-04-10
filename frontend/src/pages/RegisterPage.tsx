@@ -1,7 +1,7 @@
 import { useState, type ChangeEvent, type FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { registerUser } from "../services/authService";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../hooks/useAuth";
 import { useTyping } from "../hooks/useTyping";
 import styles from "../styles/auth.module.css";
 
@@ -20,7 +20,6 @@ type FormErrors = {
 
 export default function RegisterPage() {
   const navigate = useNavigate();
-
   const { login } = useAuth();
 
   const [form, setForm] = useState<FormData>({
@@ -76,7 +75,6 @@ export default function RegisterPage() {
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-
     if (!validate()) return;
 
     try {
@@ -89,10 +87,12 @@ export default function RegisterPage() {
 
       await login(form.email, form.password);
       navigate("/dashboard");
-    } catch (err: any) {
-      setErrors({
-        general: err.message,
-      });
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setErrors({ general: err.message });
+      } else {
+        setErrors({ general: "Something went wrong" });
+      }
     } finally {
       setLoading(false);
     }
