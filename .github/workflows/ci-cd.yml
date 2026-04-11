@@ -76,7 +76,17 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     if: github.event_name == 'push'
+    env:
+      CONNECTION_STRING: ${{ secrets.CONNECTION_STRING }}
+      JWT_KEY: ${{ secrets.JWT_KEY }}
+      DB_SA_PASSWORD: ${{ secrets.DB_SA_PASSWORD }}
 
     steps:
+      - name: Validate required secrets
+        run: |
+          test -n "$CONNECTION_STRING"
+          test -n "$JWT_KEY"
+          test -n "$DB_SA_PASSWORD"
+
       - name: Simulate deployment
         run: echo "Deployment triggered (fake). Real deploy in task #8."
