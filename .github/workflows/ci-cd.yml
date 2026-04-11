@@ -89,4 +89,5 @@ jobs:
           test -n "$DB_SA_PASSWORD"
 
       - name: Simulate deployment
-        run: echo "Deployment triggered (fake). Real deploy in task #8."
+        run: |
+          echo "Deployment triggered (fake). Real deploy in task #8."
