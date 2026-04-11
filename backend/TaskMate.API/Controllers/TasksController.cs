@@ -1,10 +1,9 @@
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-
 using TaskMate.API.Data;
-using TaskMate.API.Models.Entities;
 using TaskMate.API.Models.DTOs;
+using TaskMate.API.Models.Entities;
 
 using TaskStatus = TaskMate.API.Models.Enums.TaskStatus;
 using TaskPriority = TaskMate.API.Models.Enums.TaskPriority;
@@ -16,10 +15,14 @@ namespace TaskMate.API.Controllers
     public class TasksController : ControllerBase
     {
         private readonly AppDbContext _context;
+        private readonly ILogger<TasksController> _logger;
 
-        public TasksController(AppDbContext context)
+        public TasksController(
+            AppDbContext context,
+            ILogger<TasksController> logger)
         {
             _context = context;
+            _logger = logger;
         }
 
         private Guid GetUserId()
@@ -31,8 +34,15 @@ namespace TaskMate.API.Controllers
         [Authorize]
         public async Task<IActionResult> Create([FromBody] CreateTaskDto dto)
         {
+            var userId = GetUserId();
+
+            _logger.LogInformation("Create task request for user {UserId}", userId);
+
             if (string.IsNullOrWhiteSpace(dto.Title))
+            {
+                _logger.LogWarning("Create task failed because title is required for user {UserId}", userId);
                 return BadRequest("Title is required");
+            }
 
             var task = new TaskItem
             {
@@ -48,6 +58,8 @@ namespace TaskMate.API.Controllers
             _context.Tasks.Add(task);
             await _context.SaveChangesAsync();
 
+            _logger.LogInformation("Task created successfully. TaskId: {TaskId}, UserId: {UserId}", task.Id, userId);
+
             return CreatedAtAction(nameof(GetById), new { id = task.Id }, task);
         }
 
@@ -57,9 +69,13 @@ namespace TaskMate.API.Controllers
         {
             var userId = GetUserId();
 
+            _logger.LogInformation("Fetching tasks for user {UserId}", userId);
+
             var tasks = await _context.Tasks
                 .Where(t => t.UserId == userId)
                 .ToListAsync();
+
+            _logger.LogInformation("Fetched {Count} tasks for user {UserId}", tasks.Count, userId);
 
             return Ok(tasks);
         }
@@ -70,11 +86,16 @@ namespace TaskMate.API.Controllers
         {
             var userId = GetUserId();
 
+            _logger.LogInformation("Fetching task {TaskId} for user {UserId}", id, userId);
+
             var task = await _context.Tasks
                 .FirstOrDefaultAsync(t => t.Id == id && t.UserId == userId);
 
             if (task == null)
+            {
+                _logger.LogWarning("Task {TaskId} not found for user {UserId}", id, userId);
                 return NotFound();
+            }
 
             return Ok(task);
         }
@@ -85,14 +106,22 @@ namespace TaskMate.API.Controllers
         {
             var userId = GetUserId();
 
+            _logger.LogInformation("Update task request. TaskId: {TaskId}, UserId: {UserId}", id, userId);
+
             var task = await _context.Tasks
                 .FirstOrDefaultAsync(t => t.Id == id && t.UserId == userId);
 
             if (task == null)
+            {
+                _logger.LogWarning("Update task failed. TaskId: {TaskId} not found for user {UserId}", id, userId);
                 return NotFound();
+            }
 
             if (string.IsNullOrWhiteSpace(dto.Title))
+            {
+                _logger.LogWarning("Update task failed because title is required. TaskId: {TaskId}, UserId: {UserId}", id, userId);
                 return BadRequest("Title is required");
+            }
 
             task.Title = dto.Title;
             task.Description = dto.Description;
@@ -104,6 +133,8 @@ namespace TaskMate.API.Controllers
 
             await _context.SaveChangesAsync();
 
+            _logger.LogInformation("Task updated successfully. TaskId: {TaskId}, UserId: {UserId}", id, userId);
+
             return Ok(task);
         }
 
@@ -113,11 +144,16 @@ namespace TaskMate.API.Controllers
         {
             var userId = GetUserId();
 
+            _logger.LogInformation("Patch task request. TaskId: {TaskId}, UserId: {UserId}", id, userId);
+
             var task = await _context.Tasks
                 .FirstOrDefaultAsync(t => t.Id == id && t.UserId == userId);
 
             if (task == null)
+            {
+                _logger.LogWarning("Patch task failed. TaskId: {TaskId} not found for user {UserId}", id, userId);
                 return NotFound();
+            }
 
             if (dto.Status.HasValue)
                 task.Status = dto.Status.Value;
@@ -135,6 +171,8 @@ namespace TaskMate.API.Controllers
 
             await _context.SaveChangesAsync();
 
+            _logger.LogInformation("Task patched successfully. TaskId: {TaskId}, UserId: {UserId}", id, userId);
+
             return Ok(task);
         }
 
@@ -144,14 +182,21 @@ namespace TaskMate.API.Controllers
         {
             var userId = GetUserId();
 
+            _logger.LogInformation("Delete task request. TaskId: {TaskId}, UserId: {UserId}", id, userId);
+
             var task = await _context.Tasks
                 .FirstOrDefaultAsync(t => t.Id == id && t.UserId == userId);
 
             if (task == null)
+            {
+                _logger.LogWarning("Delete task failed. TaskId: {TaskId} not found for user {UserId}", id, userId);
                 return NotFound();
+            }
 
             _context.Tasks.Remove(task);
             await _context.SaveChangesAsync();
+
+            _logger.LogInformation("Task deleted successfully. TaskId: {TaskId}, UserId: {UserId}", id, userId);
 
             return NoContent();
         }
