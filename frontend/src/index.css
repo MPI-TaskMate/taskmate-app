@@ -15,7 +15,15 @@ body {
   --color-secondary: #59a9a1;
   --color-accent: #9b7bbf;
 
-  --neutral-50: #f5f8d3;
+  --color-primary-light: #d9ecf7;
+  --color-secondary-light: #dff3f1;
+  --color-accent-light: #eee6f7;
+
+  --color-primary-dark: #245875;
+  --color-secondary-dark: #245753;
+  --color-accent-dark: #4a356e;
+
+  --neutral-50: #f8fafc;
   --neutral-100: #f1f5f9;
   --neutral-200: #e2e8f0;
   --neutral-300: #cbd5e1;
@@ -28,13 +36,14 @@ body {
 
   --font-body: "Manrope", sans-serif;
   --font-heading: "Space Grotesk", sans-serif;
+  --font-brand: "Press Start 2P", system-ui;
 
   --radius: 10px;
 }
 
 body {
   font-family: var(--font-body);
-  background: linear-gradient(180deg, var(--neutral-100), #eef2f7);
+  background: var(--neutral-100);
   color: var(--neutral-800);
 
   -webkit-font-smoothing: antialiased;
@@ -87,7 +96,7 @@ a:hover {
 }
 
 .brand {
-  font-family: "Press Start 2P", system-ui;
+  font-family: var(--font-brand);
   font-size: 2rem;
   letter-spacing: 1px;
 }
