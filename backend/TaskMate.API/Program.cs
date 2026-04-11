@@ -4,9 +4,15 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
 using TaskMate.API.Data;
+using TaskMate.API.Middleware;
 using TaskMate.API.Services;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Logging
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
+builder.Logging.AddDebug();
 
 // Controllers
 builder.Services.AddControllers();
@@ -42,7 +48,7 @@ builder.Services.AddSwaggerGen(options =>
                     Id = "Bearer"
                 }
             },
-            new string[] {}
+            Array.Empty<string>()
         }
     });
 });
@@ -99,6 +105,10 @@ builder.Services.AddScoped<JwtTokenService>();
 
 var app = builder.Build();
 
+// Global middleware
+app.UseMiddleware<ExceptionHandlingMiddleware>();
+app.UseMiddleware<RequestLoggingMiddleware>();
+
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
@@ -110,6 +120,7 @@ using (var scope = app.Services.CreateScope())
     {
         try
         {
+            logger.LogInformation("Applying database migrations...");
             db.Database.Migrate();
             logger.LogInformation("Database migrations applied successfully.");
             break;
@@ -120,7 +131,10 @@ using (var scope = app.Services.CreateScope())
             logger.LogWarning(ex, "Database not ready yet. Retries left: {Retries}", retries);
 
             if (retries == 0)
+            {
+                logger.LogCritical(ex, "Database migration failed after all retries.");
                 throw;
+            }
 
             Thread.Sleep(5000);
         }
