@@ -72,7 +72,9 @@ export async function updateTaskStatus(id: string, status: number) {
     if (errorData?.message) {
       message = errorData.message;
     }
-  } catch {}
+  } catch (e) {
+    console.error(e);
+  }
 
   throw new Error(message);
 }

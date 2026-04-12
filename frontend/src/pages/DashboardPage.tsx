@@ -1,4 +1,4 @@
-import { DndContext, closestCenter } from "@dnd-kit/core";
+import { DndContext, closestCenter, type DragEndEvent } from "@dnd-kit/core";
 import { useEffect, useMemo, useState } from "react";
 import styles from "../styles/dashboard.module.css";
 import {
@@ -19,17 +19,23 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  function handleDragEnd(event: any) {
+  function handleDragEnd(event: DragEndEvent) {
     const { active, over } = event;
 
     if (!over) return;
 
-    const taskId = active.id;
-    const newStatus = over.id;
+    const taskId = active.id as string;
+    const newStatus = over.id as TaskItem["status"];
 
-    if (active.data.current.status === newStatus) return;
+    const activeData = active.data.current as
+      | { status: TaskItem["status"] }
+      | undefined;
 
-    const oldStatus = active.data.current.status;
+    if (!activeData) return;
+
+    if (activeData.status === newStatus) return;
+
+    const oldStatus = activeData.status;
 
     setTasks((prev) =>
       prev.map((t) => (t.id === taskId ? { ...t, status: newStatus } : t)),
