@@ -56,3 +56,24 @@ export async function getTasks(): Promise<TaskItem[]> {
 
   return response.json();
 }
+
+export async function updateTaskStatus(id: string, status: number) {
+  const response = await fetch(`${API_BASE_URL}/tasks/${id}`, {
+    method: "PATCH",
+    headers: getAuthHeaders(),
+    body: JSON.stringify({ status }),
+  });
+
+  if (!response.ok) {
+  let message = "Failed to update task status";
+
+  try {
+    const errorData = await response.json();
+    if (errorData?.message) {
+      message = errorData.message;
+    }
+  } catch {}
+
+  throw new Error(message);
+}
+}
