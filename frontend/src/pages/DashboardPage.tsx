@@ -4,6 +4,7 @@ import styles from "../styles/dashboard.module.css";
 import {
   getTasks,
   updateTaskStatus,
+  updateTaskPin,
   type TaskItem,
   TASK_STATUS,
 } from "../services/tasksService";
@@ -22,6 +23,32 @@ export default function DashboardPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [focusMode, setFocusMode] = useState(false);
+
+  async function handlePinToggle(taskId: string) {
+    let oldPinnedState: boolean | undefined;
+
+    setTasks((prev) => {
+      const updated = prev.map((task) => {
+        if (task.id === taskId) {
+          oldPinnedState = task.isPinned;
+          return { ...task, isPinned: !task.isPinned };
+        }
+        return task;
+      });
+
+      return updated;
+    });
+
+    try {
+      await updateTaskPin(taskId, !oldPinnedState);
+    } catch {
+      setTasks((prev) =>
+        prev.map((task) =>
+          task.id === taskId ? { ...task, isPinned: oldPinnedState } : task,
+        ),
+      );
+    }
+  }
 
   function handleDragEnd(event: DragEndEvent) {
     const { active, over } = event;
@@ -109,7 +136,10 @@ export default function DashboardPage() {
       );
     }
 
-    return result;
+    return [...result].sort((a, b) => {
+      if (a.isPinned === b.isPinned) return 0;
+      return a.isPinned ? -1 : 1;
+    });
   }, [tasks, debouncedSearch, focusMode]);
 
   const todoTasks = useMemo(
@@ -208,23 +238,31 @@ export default function DashboardPage() {
                 title="Todo"
                 status={TASK_STATUS.Todo}
                 tasks={todoTasks}
+                onPinToggle={handlePinToggle}
               />
               <KanbanColumn
                 title="In Progress"
                 status={TASK_STATUS.InProgress}
                 tasks={inProgressTasks}
+                onPinToggle={handlePinToggle}
               />
               <KanbanColumn
                 title="Done"
                 status={TASK_STATUS.Done}
                 tasks={doneTasks}
+                onPinToggle={handlePinToggle}
               />
             </section>
           </DndContext>
         ) : (
           <section className={styles.listView}>
             {filteredTasks.map((task) => (
-              <TaskCard key={task.id} task={task} showStatus />
+              <TaskCard
+                key={task.id}
+                task={task}
+                showStatus
+                onPinToggle={handlePinToggle}
+              />
             ))}
           </section>
         )}

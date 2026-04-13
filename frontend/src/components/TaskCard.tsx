@@ -9,12 +9,17 @@ import {
 type TaskCardProps = {
   task: TaskItem;
   showStatus?: boolean;
+  onPinToggle?: (taskId: string) => void;
 };
 
-export default function TaskCard({ task, showStatus = false }: TaskCardProps) {
+export default function TaskCard({
+  task,
+  showStatus = false,
+  onPinToggle,
+}: TaskCardProps) {
   const { attributes, listeners, setNodeRef, transform } = useDraggable({
     id: task.id,
-    data: { status: task.status }, 
+    data: { status: task.status },
   });
 
   return (
@@ -30,7 +35,25 @@ export default function TaskCard({ task, showStatus = false }: TaskCardProps) {
       }}
     >
       <div className={showStatus ? styles.cardTop : undefined}>
-        <h4 className={styles.taskTitle}>{task.title}</h4>
+        <div className={styles.cardHeader}>
+          <h4 className={styles.taskTitle}>{task.title}</h4>
+
+          <button
+            type="button"
+            className={styles.pinButton}
+            onPointerDown={(e) => e.stopPropagation()}
+            onClick={(e) => {
+              e.stopPropagation();
+              onPinToggle?.(task.id);
+            }}
+          >
+            {task.isPinned ? (
+              <img src="/assets/icons/pin-filled.png" />
+            ) : (
+              <img src="/assets/icons/pin-outline.png" />
+            )}
+          </button>
+        </div>
 
         {showStatus && (
           <span
