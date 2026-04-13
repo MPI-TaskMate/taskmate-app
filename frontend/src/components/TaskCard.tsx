@@ -1,3 +1,4 @@
+import { useDraggable } from "@dnd-kit/core";
 import styles from "../styles/dashboard.module.css";
 import {
   type TaskItem,
@@ -11,8 +12,23 @@ type TaskCardProps = {
 };
 
 export default function TaskCard({ task, showStatus = false }: TaskCardProps) {
+  const { attributes, listeners, setNodeRef, transform } = useDraggable({
+    id: task.id,
+    data: { status: task.status }, 
+  });
+
   return (
-    <article className={showStatus ? styles.listCard : styles.taskCard}>
+    <article
+      ref={setNodeRef}
+      {...listeners}
+      {...attributes}
+      className={showStatus ? styles.listCard : styles.taskCard}
+      style={{
+        transform: transform
+          ? `translate(${transform.x}px, ${transform.y}px)`
+          : undefined,
+      }}
+    >
       <div className={showStatus ? styles.cardTop : undefined}>
         <h4 className={styles.taskTitle}>{task.title}</h4>
 

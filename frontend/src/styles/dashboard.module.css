@@ -95,13 +95,13 @@
 }
 
 .inProgressColumn {
-  --column-accent: var(--color-secondary-dark);
-  background: var(--color-secondary);
+  --column-accent: var(--color-accent-dark);
+  background: var(--color-accent);
 }
 
 .doneColumn {
-  --column-accent: var(--color-accent-dark);
-  background: var(--color-accent);
+  --column-accent: var(--color-secondary-dark);
+  background: var(--color-secondary);
 }
 
 .columnHeader {
@@ -147,14 +147,16 @@
   background: var(--neutral-50);
   border-radius: 20px;
   padding: 1rem;
-
-  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
-
+  cursor: grab;
   transition: transform 0.18s ease;
 }
 
 .taskCard:hover {
   transform: translateY(-2px);
+}
+
+.taskCard:active {
+  cursor: grabbing;
 }
 
 .listCard {

@@ -1,6 +1,12 @@
+import { DndContext, closestCenter, type DragEndEvent } from "@dnd-kit/core";
 import { useEffect, useMemo, useState } from "react";
 import styles from "../styles/dashboard.module.css";
-import { getTasks, type TaskItem, TASK_STATUS } from "../services/tasksService";
+import {
+  getTasks,
+  updateTaskStatus,
+  type TaskItem,
+  TASK_STATUS,
+} from "../services/tasksService";
 import KanbanColumn from "../components/KanbanColumn";
 import TaskCard from "../components/TaskCard";
 import ViewToggle from "../components/ViewToggle";
@@ -12,6 +18,35 @@ export default function DashboardPage() {
   const [tasks, setTasks] = useState<TaskItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+
+  function handleDragEnd(event: DragEndEvent) {
+    const { active, over } = event;
+
+    if (!over) return;
+
+    const taskId = active.id as string;
+    const newStatus = over.id as TaskItem["status"];
+
+    const activeData = active.data.current as
+      | { status: TaskItem["status"] }
+      | undefined;
+
+    if (!activeData) return;
+
+    if (activeData.status === newStatus) return;
+
+    const oldStatus = activeData.status;
+
+    setTasks((prev) =>
+      prev.map((t) => (t.id === taskId ? { ...t, status: newStatus } : t)),
+    );
+
+    updateTaskStatus(taskId, newStatus).catch(() => {
+      setTasks((prev) =>
+        prev.map((t) => (t.id === taskId ? { ...t, status: oldStatus } : t)),
+      );
+    });
+  }
 
   useEffect(() => {
     async function loadTasks() {
@@ -82,11 +117,28 @@ export default function DashboardPage() {
         </div>
 
         {viewMode === "kanban" ? (
-          <section className={styles.kanbanBoard}>
-            <KanbanColumn title="Todo" tasks={todoTasks} />
-            <KanbanColumn title="In Progress" tasks={inProgressTasks} />
-            <KanbanColumn title="Done" tasks={doneTasks} />
-          </section>
+          <DndContext
+            collisionDetection={closestCenter}
+            onDragEnd={handleDragEnd}
+          >
+            <section className={styles.kanbanBoard}>
+              <KanbanColumn
+                title="Todo"
+                status={TASK_STATUS.Todo}
+                tasks={todoTasks}
+              />
+              <KanbanColumn
+                title="In Progress"
+                status={TASK_STATUS.InProgress}
+                tasks={inProgressTasks}
+              />
+              <KanbanColumn
+                title="Done"
+                status={TASK_STATUS.Done}
+                tasks={doneTasks}
+              />
+            </section>
+          </DndContext>
         ) : (
           <section className={styles.listView}>
             {tasks.map((task) => (
