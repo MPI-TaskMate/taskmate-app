@@ -1,18 +1,20 @@
 import { useDroppable } from "@dnd-kit/core";
 import styles from "../styles/dashboard.module.css";
-import { type TaskItem, type TaskStatus } from "../services/tasksService";
+import { type TaskItem } from "../services/tasksService";
 import TaskCard from "./TaskCard";
 
 type KanbanColumnProps = {
   title: string;
-  status: TaskStatus;
+  status: TaskItem["status"];
   tasks: TaskItem[];
+  onPinToggle?: (taskId: string) => void;
 };
 
 export default function KanbanColumn({
   title,
   status,
   tasks,
+  onPinToggle,
 }: KanbanColumnProps) {
   const { setNodeRef } = useDroppable({
     id: status,
@@ -31,7 +33,7 @@ export default function KanbanColumn({
 
       <div className={styles.columnContent}>
         {tasks.map((task) => (
-          <TaskCard key={task.id} task={task} />
+          <TaskCard key={task.id} task={task} onPinToggle={onPinToggle} />
         ))}
       </div>
     </section>

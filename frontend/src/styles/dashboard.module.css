@@ -332,6 +332,11 @@
   border-bottom: none;
 }
 
+.listCard .cardHeader {
+  justify-content: flex-start;
+  gap: 10px;
+}
+
 .taskTitle {
   margin: 0;
   font-size: 1.02rem;
@@ -362,6 +367,33 @@
   justify-content: space-between;
   align-items: flex-start;
   gap: 1rem;
+}
+
+.cardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.pinButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+.pinButton img {
+  width: 16px;
+  height: 16px;
+  object-fit: contain;
+  transition: transform 0.15s ease;
+}
+
+.pinButton:hover img {
+  transform: scale(1.1);
 }
 
 .statusBadge {

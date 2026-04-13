@@ -67,7 +67,7 @@ export async function getTasks(): Promise<TaskItem[]> {
 
 export async function updateTaskStatus(
   id: string,
-  status: TaskStatus
+  status: TaskStatus,
 ): Promise<TaskItem> {
   const response = await fetch(`${API_BASE_URL}/tasks/${id}`, {
     method: "PATCH",
@@ -93,9 +93,32 @@ export async function updateTaskStatus(
   return response.json();
 }
 
-export async function createTask(
-  data: CreateTaskRequest
-): Promise<TaskItem> {
+export async function updateTaskPin(taskId: string, isPinned: boolean) {
+  const response = await fetch(`${API_BASE_URL}/tasks/${taskId}`, {
+    method: "PATCH",
+    headers: getAuthHeaders(),
+    body: JSON.stringify({ isPinned }),
+  });
+
+  if (!response.ok) {
+    let message = "Failed to update task pin";
+
+    try {
+      const errorData = await response.json();
+      if (errorData?.message) {
+        message = errorData.message;
+      }
+    } catch (e) {
+      console.error(e);
+    }
+
+    throw new Error(message);
+  }
+
+  return response.json();
+}
+
+export async function createTask(data: CreateTaskRequest): Promise<TaskItem> {
   const res = await fetch(`${API_BASE_URL}/tasks`, {
     method: "POST",
     headers: getAuthHeaders(),
