@@ -12,7 +12,7 @@
   justify-content: space-between;
   align-items: flex-start;
   gap: 1rem;
-  margin-bottom: 2rem;
+  margin-bottom: 1rem;
 }
 
 .viewToggle {
@@ -75,6 +75,65 @@
 
 .activeToggle {
   color: white;
+}
+
+.searchContainer {
+  margin-bottom: 25px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.searchWrapper {
+  position: relative;
+  width: 100%;
+  max-width: 400px;
+}
+
+.searchInput {
+  width: 100%;
+  max-width: 400px;
+  padding: 10px 14px 10px 32px;
+  border-radius: 20px;
+  border: 2px solid var(--neutral-300);
+  background: var(--neutral-50);
+  font-size: 14px;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.searchInput::placeholder {
+  color: var(--neutral-400);
+}
+
+.searchInput:focus {
+  border-color: var(--color-primary);
+}
+
+.iconDefault,
+.iconHover {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 20px;
+  height: 20px;
+  transition: opacity 0.2s ease;
+}
+
+.iconDefault {
+  opacity: 0.5;
+}
+
+.iconHover {
+  opacity: 0;
+}
+
+.searchWrapper:focus-within .iconDefault {
+  opacity: 0;
+}
+
+.searchWrapper:focus-within .iconHover {
+  opacity: 1;
 }
 
 .kanbanBoard {
