@@ -108,7 +108,9 @@ export async function updateTaskPin(taskId: string, isPinned: boolean) {
       if (errorData?.message) {
         message = errorData.message;
       }
-    } catch {}
+    } catch (e) {
+      console.error(e);
+    }
 
     throw new Error(message);
   }
