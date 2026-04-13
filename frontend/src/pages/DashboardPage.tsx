@@ -10,6 +10,7 @@ import {
 import KanbanColumn from "../components/KanbanColumn";
 import TaskCard from "../components/TaskCard";
 import ViewToggle from "../components/ViewToggle";
+import QuickAddTask from "../components/QuickAddTask";
 
 type ViewMode = "list" | "kanban";
 
@@ -135,24 +136,30 @@ export default function DashboardPage() {
           <ViewToggle viewMode={viewMode} onChange={setViewMode} />
         </div>
 
-        <div className={styles.searchContainer}>
-          <div className={styles.searchWrapper}>
-            <img
-              src="/assets/icons/search-icon.svg"
-              className={styles.iconDefault}
-            />
-            <img
-              src="/assets/icons/search-icon-hover.svg"
-              className={styles.iconHover}
-            />
+        <div className={styles.actionsRow}>
+          <QuickAddTask
+            onTaskCreated={(task) => setTasks((prev) => [task, ...prev])}
+          />
 
-            <input
-              type="text"
-              placeholder="Search tasks..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className={styles.searchInput}
-            />
+          <div className={styles.searchContainer}>
+            <div className={styles.searchWrapper}>
+              <img
+                src="/assets/icons/search-icon.svg"
+                className={styles.iconDefault}
+              />
+              <img
+                src="/assets/icons/search-icon-hover.svg"
+                className={styles.iconHover}
+              />
+
+              <input
+                type="text"
+                placeholder="Search tasks..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className={styles.searchInput}
+              />
+            </div>
           </div>
         </div>
 

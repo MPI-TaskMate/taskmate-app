@@ -26,13 +26,22 @@ export type TaskItem = {
   deadline: string | null;
   status: TaskStatus;
   priority: TaskPriority;
-  estimatedMinutes: number | null;
-  isPinned: boolean;
+  estimatedMinutes?: number | null;
+  isPinned?: boolean;
   subjectId: string | null;
   createdAt: string;
   updatedAt: string | null;
 };
 
+export type CreateTaskRequest = {
+  title: string;
+  description?: string;
+  deadline?: string | null;
+  priority: TaskPriority;
+  subjectId?: string | null;
+};
+
+// 🔹 GET TASKS
 export async function getTasks(): Promise<TaskItem[]> {
   const response = await fetch(`${API_BASE_URL}/tasks`, {
     method: "GET",
@@ -57,7 +66,10 @@ export async function getTasks(): Promise<TaskItem[]> {
   return response.json();
 }
 
-export async function updateTaskStatus(id: string, status: number) {
+export async function updateTaskStatus(
+  id: string,
+  status: TaskStatus
+): Promise<TaskItem> {
   const response = await fetch(`${API_BASE_URL}/tasks/${id}`, {
     method: "PATCH",
     headers: getAuthHeaders(),
@@ -65,17 +77,46 @@ export async function updateTaskStatus(id: string, status: number) {
   });
 
   if (!response.ok) {
-  let message = "Failed to update task status";
+    let message = "Failed to update task status";
 
-  try {
-    const errorData = await response.json();
-    if (errorData?.message) {
-      message = errorData.message;
+    try {
+      const errorData = await response.json();
+      if (errorData?.message) {
+        message = errorData.message;
+      }
+    } catch (e) {
+      console.error(e);
     }
-  } catch (e) {
-    console.error(e);
+
+    throw new Error(message);
   }
 
-  throw new Error(message);
+  return response.json();
 }
+
+export async function createTask(
+  data: CreateTaskRequest
+): Promise<TaskItem> {
+  const res = await fetch(`${API_BASE_URL}/tasks`, {
+    method: "POST",
+    headers: getAuthHeaders(),
+    body: JSON.stringify(data),
+  });
+
+  if (!res.ok) {
+    let message = "Failed to create task";
+
+    try {
+      const errorData = await res.json();
+      if (errorData?.message) {
+        message = errorData.message;
+      }
+    } catch (e) {
+      console.error(e);
+    }
+
+    throw new Error(message);
+  }
+
+  return res.json();
 }
