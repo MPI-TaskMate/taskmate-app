@@ -229,7 +229,6 @@
   font-weight: 500;
   color: var(--color-accent);
   background: var(--color-accent-light);
-  border: 1px solid var(var(--column-accent));
   padding: 6px 12px;
   border-radius: 999px;
   display: inline-flex;
