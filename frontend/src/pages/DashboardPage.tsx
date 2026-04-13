@@ -21,6 +21,7 @@ export default function DashboardPage() {
   const [error, setError] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [focusMode, setFocusMode] = useState(false);
 
   function handleDragEnd(event: DragEndEvent) {
     const { active, over } = event;
@@ -49,6 +50,18 @@ export default function DashboardPage() {
         prev.map((t) => (t.id === taskId ? { ...t, status: oldStatus } : t)),
       );
     });
+  }
+
+  function isTodayOrOverdue(deadline?: string | null) {
+    if (!deadline) return false;
+
+    const today = new Date();
+    const taskDate = new Date(deadline);
+
+    today.setHours(0, 0, 0, 0);
+    taskDate.setHours(0, 0, 0, 0);
+
+    return taskDate.getTime() <= today.getTime();
   }
 
   useEffect(() => {
@@ -81,12 +94,23 @@ export default function DashboardPage() {
   }, []);
 
   const filteredTasks = useMemo(() => {
-    if (!debouncedSearch.trim()) return tasks;
+    let result = tasks;
 
-    return tasks.filter((task) =>
-      task.title.toLowerCase().includes(debouncedSearch.toLowerCase()),
-    );
-  }, [tasks, debouncedSearch]);
+    if (debouncedSearch.trim()) {
+      result = result.filter((task) =>
+        task.title.toLowerCase().includes(debouncedSearch.toLowerCase()),
+      );
+    }
+
+    if (focusMode) {
+      result = result.filter(
+        (task) =>
+          task.status !== TASK_STATUS.Done && isTodayOrOverdue(task.deadline),
+      );
+    }
+
+    return result;
+  }, [tasks, debouncedSearch, focusMode]);
 
   const todoTasks = useMemo(
     () => filteredTasks.filter((task) => task.status === TASK_STATUS.Todo),
@@ -151,7 +175,6 @@ export default function DashboardPage() {
                 src="/assets/icons/search-icon-hover.svg"
                 className={styles.iconHover}
               />
-
               <input
                 type="text"
                 placeholder="Search tasks..."
@@ -159,6 +182,18 @@ export default function DashboardPage() {
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className={styles.searchInput}
               />
+            </div>
+            <div className={styles.focusWrapper}>
+              <div className={styles.focusButtons}>
+                {!focusMode ? (
+                  <button onClick={() => setFocusMode(true)}>Focus Mode</button>
+                ) : (
+                  <button onClick={() => setFocusMode(false)}>Show all</button>
+                )}
+              </div>
+              {focusMode && (
+                <p className={styles.focusIndicator}>Showing today's tasks</p>
+              )}
             </div>
           </div>
         </div>

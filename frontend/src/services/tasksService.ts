@@ -41,7 +41,6 @@ export type CreateTaskRequest = {
   subjectId?: string | null;
 };
 
-// 🔹 GET TASKS
 export async function getTasks(): Promise<TaskItem[]> {
   const response = await fetch(`${API_BASE_URL}/tasks`, {
     method: "GET",
