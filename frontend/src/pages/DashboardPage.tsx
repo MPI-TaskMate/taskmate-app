@@ -18,6 +18,8 @@ export default function DashboardPage() {
   const [tasks, setTasks] = useState<TaskItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
 
   function handleDragEnd(event: DragEndEvent) {
     const { active, over } = event;
@@ -49,6 +51,14 @@ export default function DashboardPage() {
   }
 
   useEffect(() => {
+    const timeout = setTimeout(() => {
+      setDebouncedSearch(searchTerm);
+    }, 300);
+
+    return () => clearTimeout(timeout);
+  }, [searchTerm]);
+
+  useEffect(() => {
     async function loadTasks() {
       try {
         setLoading(true);
@@ -69,19 +79,28 @@ export default function DashboardPage() {
     loadTasks();
   }, []);
 
+  const filteredTasks = useMemo(() => {
+    if (!debouncedSearch.trim()) return tasks;
+
+    return tasks.filter((task) =>
+      task.title.toLowerCase().includes(debouncedSearch.toLowerCase()),
+    );
+  }, [tasks, debouncedSearch]);
+
   const todoTasks = useMemo(
-    () => tasks.filter((task) => task.status === TASK_STATUS.Todo),
-    [tasks],
+    () => filteredTasks.filter((task) => task.status === TASK_STATUS.Todo),
+    [filteredTasks],
   );
 
   const inProgressTasks = useMemo(
-    () => tasks.filter((task) => task.status === TASK_STATUS.InProgress),
-    [tasks],
+    () =>
+      filteredTasks.filter((task) => task.status === TASK_STATUS.InProgress),
+    [filteredTasks],
   );
 
   const doneTasks = useMemo(
-    () => tasks.filter((task) => task.status === TASK_STATUS.Done),
-    [tasks],
+    () => filteredTasks.filter((task) => task.status === TASK_STATUS.Done),
+    [filteredTasks],
   );
 
   if (loading) {
@@ -116,6 +135,27 @@ export default function DashboardPage() {
           <ViewToggle viewMode={viewMode} onChange={setViewMode} />
         </div>
 
+        <div className={styles.searchContainer}>
+          <div className={styles.searchWrapper}>
+            <img
+              src="/assets/icons/search-icon.svg"
+              className={styles.iconDefault}
+            />
+            <img
+              src="/assets/icons/search-icon-hover.svg"
+              className={styles.iconHover}
+            />
+
+            <input
+              type="text"
+              placeholder="Search tasks..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className={styles.searchInput}
+            />
+          </div>
+        </div>
+
         {viewMode === "kanban" ? (
           <DndContext
             collisionDetection={closestCenter}
@@ -141,7 +181,7 @@ export default function DashboardPage() {
           </DndContext>
         ) : (
           <section className={styles.listView}>
-            {tasks.map((task) => (
+            {filteredTasks.map((task) => (
               <TaskCard key={task.id} task={task} showStatus />
             ))}
           </section>
