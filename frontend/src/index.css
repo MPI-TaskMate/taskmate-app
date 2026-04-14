@@ -23,6 +23,15 @@ body {
   --color-secondary-dark: #245753;
   --color-accent-dark: #4a356e;
 
+  --priority-low-bg: #e8f7ee;
+  --priority-low-text: #2e7d5b;
+
+  --priority-medium-bg: #fff4e5;
+  --priority-medium-text: #c77700;
+
+  --priority-high-bg: #fdecec;
+  --priority-high-text: #c62828;
+
   --neutral-50: #f8fafc;
   --neutral-100: #f1f5f9;
   --neutral-200: #e2e8f0;

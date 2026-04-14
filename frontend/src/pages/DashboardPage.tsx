@@ -1,6 +1,9 @@
 import { DndContext, closestCenter, type DragEndEvent } from "@dnd-kit/core";
 import { useEffect, useMemo, useState } from "react";
-import styles from "../styles/dashboard.module.css";
+import KanbanColumn from "../components/KanbanColumn";
+import ViewToggle from "../components/ViewToggle";
+import QuickAddTask from "../components/QuickAddTask";
+import TaskListItem from "../components/TaskListItem";
 import {
   getTasks,
   updateTaskStatus,
@@ -8,10 +11,7 @@ import {
   type TaskItem,
   TASK_STATUS,
 } from "../services/tasksService";
-import KanbanColumn from "../components/KanbanColumn";
-import TaskCard from "../components/TaskCard";
-import ViewToggle from "../components/ViewToggle";
-import QuickAddTask from "../components/QuickAddTask";
+import styles from "../styles/dashboard.module.css";
 
 type ViewMode = "list" | "kanban";
 
@@ -228,7 +228,12 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {viewMode === "kanban" ? (
+        {filteredTasks.length === 0 ? (
+          <div className={styles.emptyState}>
+            <h3>No tasks yet</h3>
+            <p>Start by adding your first task or adjust your filters.</p>
+          </div>
+        ) : viewMode === "kanban" ? (
           <DndContext
             collisionDetection={closestCenter}
             onDragEnd={handleDragEnd}
@@ -256,11 +261,17 @@ export default function DashboardPage() {
           </DndContext>
         ) : (
           <section className={styles.listView}>
+            <div className={styles.listHeader}>
+              <span>Task</span>
+              <span>Priority</span>
+              <span>Deadline</span>
+              <span>Status</span>
+              <span></span>
+            </div>
             {filteredTasks.map((task) => (
-              <TaskCard
+              <TaskListItem
                 key={task.id}
                 task={task}
-                showStatus
                 onPinToggle={handlePinToggle}
               />
             ))}
