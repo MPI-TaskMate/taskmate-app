@@ -1,21 +1,23 @@
+import { useState } from "react";
 import { useDraggable } from "@dnd-kit/core";
 import styles from "../styles/dashboard.module.css";
-import {
-  type TaskItem,
-  type TaskPriority,
-} from "../services/tasksService";
+import { type TaskItem, type TaskPriority } from "../services/tasksService";
 
 type TaskCardProps = {
   task: TaskItem;
   showStatus?: boolean;
   onPinToggle?: (taskId: string) => void;
+  onEdit?: (task: TaskItem) => void;
 };
 
 export default function TaskCard({
   task,
   showStatus = false,
   onPinToggle,
+  onEdit,
 }: TaskCardProps) {
+  const [menuOpen, setMenuOpen] = useState(false);
+
   const { attributes, listeners, setNodeRef, transform } = useDraggable({
     id: task.id,
     data: { status: task.status },
@@ -42,21 +44,48 @@ export default function TaskCard({
           </span>
         </div>
 
-        <button
-          type="button"
-          className={styles.pinButton}
+        <div
+          className={styles.cardActions}
           onPointerDown={(e) => e.stopPropagation()}
-          onClick={(e) => {
-            e.stopPropagation();
-            onPinToggle?.(task.id);
-          }}
+          onClick={(e) => e.stopPropagation()}
         >
-          {task.isPinned ? (
-            <img src="/assets/icons/pin-filled.png" />
-          ) : (
-            <img src="/assets/icons/pin-outline.png" />
-          )}
-        </button>
+          <div className={styles.menuWrapper}>
+            <button
+              type="button"
+              className={styles.moreButton}
+              onClick={() => setMenuOpen((prev) => !prev)}
+              aria-label="More actions"
+            >
+              ⋯
+            </button>
+
+            {menuOpen && (
+              <div className={styles.dropdownMenu}>
+                <button
+                  type="button"
+                  className={styles.menuItem}
+                  onClick={() => {
+                    setMenuOpen(false);
+                    onEdit?.(task);
+                  }}
+                >
+                  Edit
+                </button>
+              </div>
+            )}
+          </div>
+          <button
+            type="button"
+            className={styles.pinButton}
+            onClick={() => onPinToggle?.(task.id)}
+          >
+            {task.isPinned ? (
+              <img src="/assets/icons/pin-filled.png" alt="Pinned" />
+            ) : (
+              <img src="/assets/icons/pin-outline.png" alt="Unpinned" />
+            )}
+          </button>
+        </div>
       </div>
 
       <h4 className={styles.taskTitle}>{task.title}</h4>

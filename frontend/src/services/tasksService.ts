@@ -41,6 +41,15 @@ export type CreateTaskRequest = {
   subjectId?: string | null;
 };
 
+export type UpdateTaskRequest = {
+  title: string;
+  description?: string;
+  deadline?: string | null;
+  priority: TaskPriority;
+  status: TaskStatus;
+  subjectId?: string | null;
+};
+
 export async function getTasks(): Promise<TaskItem[]> {
   const response = await fetch(`${API_BASE_URL}/tasks`, {
     method: "GET",
@@ -93,7 +102,10 @@ export async function updateTaskStatus(
   return response.json();
 }
 
-export async function updateTaskPin(taskId: string, isPinned: boolean) {
+export async function updateTaskPin(
+  taskId: string,
+  isPinned: boolean,
+): Promise<TaskItem> {
   const response = await fetch(`${API_BASE_URL}/tasks/${taskId}`, {
     method: "PATCH",
     headers: getAuthHeaders(),
@@ -141,4 +153,32 @@ export async function createTask(data: CreateTaskRequest): Promise<TaskItem> {
   }
 
   return res.json();
+}
+
+export async function updateTask(
+  id: string,
+  data: UpdateTaskRequest,
+): Promise<TaskItem> {
+  const response = await fetch(`${API_BASE_URL}/tasks/${id}`, {
+    method: "PUT",
+    headers: getAuthHeaders(),
+    body: JSON.stringify(data),
+  });
+
+  if (!response.ok) {
+    let message = "Failed to update task";
+
+    try {
+      const errorData = await response.json();
+      if (errorData?.message) {
+        message = errorData.message;
+      }
+    } catch (e) {
+      console.error(e);
+    }
+
+    throw new Error(message);
+  }
+
+  return response.json();
 }

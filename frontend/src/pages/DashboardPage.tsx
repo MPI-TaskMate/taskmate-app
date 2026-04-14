@@ -2,14 +2,17 @@ import { DndContext, closestCenter, type DragEndEvent } from "@dnd-kit/core";
 import { useEffect, useMemo, useState } from "react";
 import KanbanColumn from "../components/KanbanColumn";
 import ViewToggle from "../components/ViewToggle";
-import QuickAddTask from "../components/QuickAddTask";
 import TaskListItem from "../components/TaskListItem";
+import TaskForm from "../components/TaskForm";
 import {
   getTasks,
   updateTaskStatus,
   updateTaskPin,
+  updateTask,
+  createTask,
   type TaskItem,
   TASK_STATUS,
+  type CreateTaskRequest,
 } from "../services/tasksService";
 import styles from "../styles/dashboard.module.css";
 
@@ -23,6 +26,47 @@ export default function DashboardPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [focusMode, setFocusMode] = useState(false);
+  const [isTaskFormOpen, setIsTaskFormOpen] = useState(false);
+  const [editingTask, setEditingTask] = useState<TaskItem | null>(null);
+
+  function handleOpenCreateForm() {
+    setEditingTask(null);
+    setIsTaskFormOpen(true);
+  }
+
+  function handleOpenEditForm(task: TaskItem) {
+    setEditingTask(task);
+    setIsTaskFormOpen(true);
+  }
+
+  function handleCloseTaskForm() {
+    setEditingTask(null);
+    setIsTaskFormOpen(false);
+  }
+
+  async function handleTaskSubmit(values: CreateTaskRequest) {
+    if (editingTask) {
+      const updatedTask = await updateTask(editingTask.id, {
+        ...values,
+        status: editingTask.status,
+        subjectId: values.subjectId ?? editingTask.subjectId,
+      });
+
+      setTasks((prev) =>
+        prev.map((task) => (task.id === editingTask.id ? updatedTask : task)),
+      );
+    } else {
+      const newTask = await createTask(values);
+      setTasks((prev) => [newTask, ...prev]);
+    }
+
+    handleCloseTaskForm();
+  }
+
+  async function handleQuickTaskCreated(values: CreateTaskRequest) {
+    const newTask = await createTask(values);
+    setTasks((prev) => [newTask, ...prev]);
+  }
 
   async function handlePinToggle(taskId: string) {
     let oldPinnedState: boolean | undefined;
@@ -191,9 +235,12 @@ export default function DashboardPage() {
         </div>
 
         <div className={styles.actionsRow}>
-          <QuickAddTask
-            onTaskCreated={(task) => setTasks((prev) => [task, ...prev])}
-          />
+          <button
+            onClick={handleOpenCreateForm}
+            className={styles.addTaskButton}
+          >
+            + Create Task
+          </button>
 
           <div className={styles.searchContainer}>
             <div className={styles.searchWrapper}>
@@ -244,18 +291,23 @@ export default function DashboardPage() {
                 status={TASK_STATUS.Todo}
                 tasks={todoTasks}
                 onPinToggle={handlePinToggle}
+                onEdit={handleOpenEditForm}
+                showQuickAdd
+                onTaskCreated={handleQuickTaskCreated}
               />
               <KanbanColumn
                 title="In Progress"
                 status={TASK_STATUS.InProgress}
                 tasks={inProgressTasks}
                 onPinToggle={handlePinToggle}
+                onEdit={handleOpenEditForm}
               />
               <KanbanColumn
                 title="Done"
                 status={TASK_STATUS.Done}
                 tasks={doneTasks}
                 onPinToggle={handlePinToggle}
+                onEdit={handleOpenEditForm}
               />
             </section>
           </DndContext>
@@ -273,9 +325,17 @@ export default function DashboardPage() {
                 key={task.id}
                 task={task}
                 onPinToggle={handlePinToggle}
+                onEdit={handleOpenEditForm}
               />
             ))}
           </section>
+        )}
+        {isTaskFormOpen && (
+          <TaskForm
+            initialTask={editingTask}
+            onSubmit={handleTaskSubmit}
+            onCancel={handleCloseTaskForm}
+          />
         )}
       </div>
     </main>

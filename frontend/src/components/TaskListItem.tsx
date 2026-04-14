@@ -1,3 +1,4 @@
+import { useState } from "react";
 import styles from "../styles/dashboard.module.css";
 import {
   type TaskItem,
@@ -8,10 +9,13 @@ import {
 
 type Props = {
   task: TaskItem;
-  onPinToggle?: (taskId: string) => void;
+  onPinToggle: (id: string) => void;
+  onEdit: (task: TaskItem) => void;
 };
 
-export default function TaskListItem({ task, onPinToggle }: Props) {
+export default function TaskListItem({ task, onPinToggle, onEdit }: Props) {
+  const [menuOpen, setMenuOpen] = useState(false);
+
   return (
     <div className={styles.listRow}>
       <div className={styles.colTitle}>
@@ -43,23 +47,53 @@ export default function TaskListItem({ task, onPinToggle }: Props) {
         </span>
       </div>
 
-      <div className={styles.colPin}>
+      <div className={styles.menuWrapper}>
         <button
-          className={styles.pinButton}
+          type="button"
+          className={styles.moreButton}
           onClick={(e) => {
             e.stopPropagation();
-            onPinToggle?.(task.id);
+            setMenuOpen((prev) => !prev);
           }}
+          aria-label="More actions"
         >
-          <img
-            src={
-              task.isPinned
-                ? "/assets/icons/pin-filled.png"
-                : "/assets/icons/pin-outline.png"
-            }
-            alt="pin"
-          />
+          ⋮
         </button>
+
+        {menuOpen && (
+          <div className={styles.dropdownMenu}>
+            <button
+              type="button"
+              className={styles.menuItem}
+              onClick={(e) => {
+                e.stopPropagation();
+                setMenuOpen(false);
+                onEdit(task);
+              }}
+            >
+              Edit
+            </button>
+          </div>
+        )}
+        <div className={styles.colPin}>
+          <button
+            type="button"
+            className={styles.pinButton}
+            onClick={(e) => {
+              e.stopPropagation();
+              onPinToggle(task.id);
+            }}
+          >
+            <img
+              src={
+                task.isPinned
+                  ? "/assets/icons/pin-filled.png"
+                  : "/assets/icons/pin-outline.png"
+              }
+              alt={task.isPinned ? "Pinned" : "Unpinned"}
+            />
+          </button>
+        </div>
       </div>
     </div>
   );
