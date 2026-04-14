@@ -13,6 +13,7 @@ type KanbanColumnProps = {
   tasks: TaskItem[];
   onPinToggle?: (taskId: string) => void;
   onEdit: (task: TaskItem) => void;
+  onDelete: (task: TaskItem) => void;
   showQuickAdd?: boolean;
   onTaskCreated?: (values: CreateTaskRequest) => Promise<void>;
 };
@@ -23,6 +24,7 @@ export default function KanbanColumn({
   tasks,
   onPinToggle,
   onEdit,
+  onDelete,
   showQuickAdd = false,
   onTaskCreated,
 }: KanbanColumnProps) {
@@ -48,6 +50,7 @@ export default function KanbanColumn({
             task={task}
             onPinToggle={onPinToggle}
             onEdit={onEdit}
+            onDelete={onDelete}
           />
         ))}
 

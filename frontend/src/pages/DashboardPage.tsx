@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import KanbanColumn from "../components/KanbanColumn";
 import ViewToggle from "../components/ViewToggle";
 import TaskListItem from "../components/TaskListItem";
+import DeleteTaskModal from "../components/DeleteTaskModal";
 import TaskForm from "../components/TaskForm";
 import {
   getTasks,
@@ -10,6 +11,7 @@ import {
   updateTaskPin,
   updateTask,
   createTask,
+  deleteTask,
   type TaskItem,
   TASK_STATUS,
   type CreateTaskRequest,
@@ -23,11 +25,13 @@ export default function DashboardPage() {
   const [tasks, setTasks] = useState<TaskItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [actionError, setActionError] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [focusMode, setFocusMode] = useState(false);
   const [isTaskFormOpen, setIsTaskFormOpen] = useState(false);
   const [editingTask, setEditingTask] = useState<TaskItem | null>(null);
+  const [taskToDelete, setTaskToDelete] = useState<TaskItem | null>(null);
 
   function handleOpenCreateForm() {
     setEditingTask(null);
@@ -42,6 +46,14 @@ export default function DashboardPage() {
   function handleCloseTaskForm() {
     setEditingTask(null);
     setIsTaskFormOpen(false);
+  }
+
+  function handleDeleteTask(task: TaskItem) {
+    setTaskToDelete(task);
+  }
+
+  function handleCloseDeleteModal() {
+    setTaskToDelete(null);
   }
 
   async function handleTaskSubmit(values: CreateTaskRequest) {
@@ -66,6 +78,25 @@ export default function DashboardPage() {
   async function handleQuickTaskCreated(values: CreateTaskRequest) {
     const newTask = await createTask(values);
     setTasks((prev) => [newTask, ...prev]);
+  }
+
+  async function handleConfirmDelete() {
+    if (!taskToDelete) return;
+
+    setActionError("");
+
+    try {
+      await deleteTask(taskToDelete.id);
+      setTasks((prev) => prev.filter((item) => item.id !== taskToDelete.id));
+      setTaskToDelete(null);
+    } catch (err) {
+      if (err instanceof Error) {
+        setActionError(err.message);
+      } else {
+        setActionError("Failed to delete task.");
+      }
+      setTaskToDelete(null);
+    }
   }
 
   async function handlePinToggle(taskId: string) {
@@ -226,6 +257,9 @@ export default function DashboardPage() {
     <main className={styles.page}>
       <div className="container">
         <div className={styles.header}>
+          {actionError && (
+            <div className={styles.errorBanner}>{actionError}</div>
+          )}
           <div>
             <h1>Dashboard</h1>
             <p>Stay organized and get things done.</p>
@@ -292,6 +326,7 @@ export default function DashboardPage() {
                 tasks={todoTasks}
                 onPinToggle={handlePinToggle}
                 onEdit={handleOpenEditForm}
+                onDelete={handleDeleteTask}
                 showQuickAdd
                 onTaskCreated={handleQuickTaskCreated}
               />
@@ -301,6 +336,7 @@ export default function DashboardPage() {
                 tasks={inProgressTasks}
                 onPinToggle={handlePinToggle}
                 onEdit={handleOpenEditForm}
+                onDelete={handleDeleteTask}
               />
               <KanbanColumn
                 title="Done"
@@ -308,6 +344,7 @@ export default function DashboardPage() {
                 tasks={doneTasks}
                 onPinToggle={handlePinToggle}
                 onEdit={handleOpenEditForm}
+                onDelete={handleDeleteTask}
               />
             </section>
           </DndContext>
@@ -326,6 +363,7 @@ export default function DashboardPage() {
                 task={task}
                 onPinToggle={handlePinToggle}
                 onEdit={handleOpenEditForm}
+                onDelete={handleDeleteTask}
               />
             ))}
           </section>
@@ -335,6 +373,13 @@ export default function DashboardPage() {
             initialTask={editingTask}
             onSubmit={handleTaskSubmit}
             onCancel={handleCloseTaskForm}
+          />
+        )}
+        {taskToDelete && (
+          <DeleteTaskModal
+            taskTitle={taskToDelete.title}
+            onConfirm={handleConfirmDelete}
+            onCancel={handleCloseDeleteModal}
           />
         )}
       </div>

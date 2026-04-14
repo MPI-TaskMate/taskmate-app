@@ -1,0 +1,107 @@
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.32);
+  backdrop-filter: blur(2px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px 20px;
+  z-index: 1000;
+}
+
+.deleteModal {
+  width: 100%;
+  max-width: 400px;
+  background: var(--neutral-50);
+  border-radius: 20px;
+  padding: 24px;
+  animation: modalPop 0.18s ease-out;
+}
+
+.deleteModalHeader {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 12px;
+}
+
+.deleteModalHeader h3 {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--neutral-900);
+}
+
+.deleteModalHeader p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--neutral-600);
+}
+
+.deleteTaskTitle {
+  font-weight: 600;
+  color: var(--neutral-900);
+}
+
+.deleteModalActions {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.cancelButton,
+.confirmDeleteButton {
+  border: none;
+  border-radius: 12px;
+  padding: 11px 18px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease,
+    background 0.15s ease;
+}
+
+.cancelButton {
+  background: var(--neutral-200);
+  color: var(--neutral-700);
+}
+
+.cancelButton:hover {
+  background: var(--neutral-300);
+}
+
+.confirmDeleteButton {
+  background: #dc2626;
+  color: white;
+}
+
+.confirmDeleteButton:hover {
+  transform: translateY(-1px);
+}
+
+.errorBanner {
+  margin: 12px 0 0;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: #fee2e2;
+  color: #991b1b;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+@keyframes modalPop {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}

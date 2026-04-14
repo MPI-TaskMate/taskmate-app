@@ -155,6 +155,28 @@ export async function createTask(data: CreateTaskRequest): Promise<TaskItem> {
   return res.json();
 }
 
+export async function deleteTask(id: string): Promise<void> {
+  const response = await fetch(`${API_BASE_URL}/tasks/${id}`, {
+    method: "DELETE",
+    headers: getAuthHeaders(),
+  });
+
+  if (!response.ok) {
+    let message = "Failed to delete task";
+
+    try {
+      const errorData = await response.json();
+      if (errorData?.message) {
+        message = errorData.message;
+      }
+    } catch (e) {
+      console.error(e);
+    }
+
+    throw new Error(message);
+  }
+}
+
 export async function updateTask(
   id: string,
   data: UpdateTaskRequest,
