@@ -1,52 +1,59 @@
 import { useState } from "react";
-import { createTask, TASK_PRIORITY } from "../services/tasksService";
-import { type TaskItem } from "../services/tasksService";
 import styles from "../styles/dashboard.module.css";
+import {
+  TASK_PRIORITY,
+  type CreateTaskRequest,
+  type TaskItem,
+} from "../services/tasksService";
 
 type Props = {
-  onTaskCreated: (task: TaskItem) => void;
+  status: TaskItem["status"];
+  onTaskCreated: (values: CreateTaskRequest) => Promise<void>;
 };
 
 export default function QuickAddTask({ onTaskCreated }: Props) {
   const [title, setTitle] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-
-    if (!title.trim() || loading) return;
+  async function handleCreate() {
+    if (!title.trim() || submitting) return;
 
     try {
-      setLoading(true);
+      setSubmitting(true);
 
-      const newTask = await createTask({
-        title,
+      await onTaskCreated({
+        title: title.trim(),
+        description: "",
+        deadline: null,
         priority: TASK_PRIORITY.Medium,
       });
 
-      onTaskCreated(newTask);
       setTitle("");
-    } catch (err) {
-      console.error(err);
     } finally {
-      setLoading(false);
+      setSubmitting(false);
     }
   }
 
   return (
-    <form onSubmit={handleSubmit} className={styles.quickAddForm}>
-      <div className={styles.quickAddWrapper}>
-        <input
-          type="text"
-          placeholder="+ Add task..."
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          className={styles.quickAddInput}
-        />
-        <button type="submit" className={styles.quickAddButton}>
-          +
-        </button>
-      </div>
-    </form>
+    <div className={styles.quickAddWrapper}>
+      <span className={styles.quickAddIcon}>＋</span>
+
+      <input
+        type="text"
+        value={title}
+        onChange={(e) => setTitle(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
+            handleCreate();
+          }
+          if (e.key === "Escape") {
+            setTitle("");
+          }
+        }}
+        placeholder="Add a task..."
+        className={styles.quickAddInput}
+        disabled={submitting}
+      />
+    </div>
   );
 }

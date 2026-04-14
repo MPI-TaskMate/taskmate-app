@@ -15,6 +15,23 @@
   margin-bottom: 2rem;
 }
 
+.addTaskButton {
+  min-height: 48px;
+  padding: 0 1.5rem;
+  border: none;
+  border-radius: 999px;
+  background: var(--color-primary);
+  color: var(--neutral-50);
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.addTaskButton:hover {
+  transform: translateY(-1px);
+}
+
 .viewToggle {
   position: relative;
   display: inline-flex;
@@ -84,48 +101,38 @@
 }
 
 .quickAddWrapper {
+  width: 100%;
+  min-height: 48px;
+  border: 2.5px dashed var(--color-primary-dark);
+  border-radius: 16px;
+  background: transparent;
+  background-clip: padding-box;
   display: flex;
   align-items: center;
-  width: 280px;
-  border-radius: 999px;
-  background-color: var(--color-primary-light);
-  border: 2px solid var(--color-primary);
-  padding: 4px 6px;
-  transition: all 0.2s ease;
+  gap: 0.45rem;
+  padding: 0 0.75rem;
+}
+.quickAddWrapper:hover {
+  transform: translateY(-1px);
+}
+
+.quickAddIcon {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--color-primary-dark);
 }
 
 .quickAddInput {
   flex: 1;
-  padding: 8px 12px;
   border: none;
+  outline: none;
   background: transparent;
-  color: var(--color-primary);
-  font-size: 14px;
+  font-size: 0.95rem;
+  color: var(--color-primary-dark);
 }
 
 .quickAddInput::placeholder {
-  color: var(--color-primary);
-  opacity: 0.7;
-  font-weight: 500;
-}
-
-.quickAddInput:focus {
-  outline: none;
-}
-
-.quickAddButton {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  border: none;
-  background-color: var(--color-primary);
-  color: white;
-  font-size: 14px;
-  font-weight: bold;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
+  color: var(--color-primary-dark);
 }
 
 .searchContainer {
@@ -503,6 +510,64 @@
   color: var(--color-secondary);
   background: var(--color-secondary-light);
   border-color: var(--color-secondary);
+}
+
+.cardActions {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  position: relative;
+}
+
+.menuWrapper {
+  position: relative;
+  display: flex;
+  gap: 5px;
+}
+
+.moreButton {
+  width: 20px;
+  height: 20px;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--neutral-700);
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dropdownMenu {
+  position: absolute;
+  top: calc(100% + 0.4rem);
+  right: 0;
+  min-width: 120px;
+  background: var(--neutral-50);
+  border: 1px solid var(--neutral-200);
+  border-radius: 12px;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.12);
+  padding: 0.35rem;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+}
+
+.menuItem {
+  border: none;
+  background: transparent;
+  text-align: left;
+  padding: 0.65rem 0.8rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font: inherit;
+  color: var(--neutral-700);
+}
+
+.menuItem:hover {
+  background: var(--neutral-100);
 }
 
 .emptyState {
