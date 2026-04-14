@@ -2,8 +2,7 @@ import { useDraggable } from "@dnd-kit/core";
 import styles from "../styles/dashboard.module.css";
 import {
   type TaskItem,
-  type TaskStatus,
-  TASK_STATUS,
+  type TaskPriority,
 } from "../services/tasksService";
 
 type TaskCardProps = {
@@ -34,65 +33,84 @@ export default function TaskCard({
           : undefined,
       }}
     >
-      <div className={showStatus ? styles.cardTop : undefined}>
-        <div className={styles.cardHeader}>
-          <h4 className={styles.taskTitle}>{task.title}</h4>
-
-          <button
-            type="button"
-            className={styles.pinButton}
-            onPointerDown={(e) => e.stopPropagation()}
-            onClick={(e) => {
-              e.stopPropagation();
-              onPinToggle?.(task.id);
-            }}
+      <div className={styles.cardHeader}>
+        <div className={styles.labelsRow}>
+          <span
+            className={`${styles.label} ${getPriorityClass(task.priority)}`}
           >
-            {task.isPinned ? (
-              <img src="/assets/icons/pin-filled.png" />
-            ) : (
-              <img src="/assets/icons/pin-outline.png" />
-            )}
-          </button>
+            {getPriorityLabel(task.priority)}
+          </span>
         </div>
 
-        {showStatus && (
-          <span
-            className={`${styles.statusBadge} ${getStatusClass(task.status)}`}
-          >
-            {getStatusLabel(task.status)}
-          </span>
-        )}
+        <button
+          type="button"
+          className={styles.pinButton}
+          onPointerDown={(e) => e.stopPropagation()}
+          onClick={(e) => {
+            e.stopPropagation();
+            onPinToggle?.(task.id);
+          }}
+        >
+          {task.isPinned ? (
+            <img src="/assets/icons/pin-filled.png" />
+          ) : (
+            <img src="/assets/icons/pin-outline.png" />
+          )}
+        </button>
       </div>
+
+      <h4 className={styles.taskTitle}>{task.title}</h4>
 
       {task.description && (
         <p className={styles.taskDescription}>{task.description}</p>
       )}
+
+      <div className={styles.cardFooter}>
+        {task.deadline && (
+          <span className={styles.deadline}>
+            <img
+              src="/assets/icons/clock-icon.png"
+              alt="deadline"
+              className={styles.deadlineIcon}
+            />
+            {formatDate(task.deadline)}
+          </span>
+        )}
+      </div>
     </article>
   );
 }
 
-function getStatusLabel(status: TaskStatus) {
-  switch (status) {
-    case TASK_STATUS.Todo:
-      return "Todo";
-    case TASK_STATUS.InProgress:
-      return "In Progress";
-    case TASK_STATUS.Done:
-      return "Done";
-    default:
-      return "Unknown";
-  }
-}
-
-function getStatusClass(status: TaskStatus) {
-  switch (status) {
-    case TASK_STATUS.Todo:
-      return styles.todoBadge;
-    case TASK_STATUS.InProgress:
-      return styles.inProgressBadge;
-    case TASK_STATUS.Done:
-      return styles.doneBadge;
+function getPriorityClass(priority: TaskPriority) {
+  switch (priority) {
+    case 0:
+      return styles.priorityLow;
+    case 1:
+      return styles.priorityMedium;
+    case 2:
+      return styles.priorityHigh;
     default:
       return "";
   }
+}
+
+function getPriorityLabel(priority: TaskPriority) {
+  switch (priority) {
+    case 0:
+      return "Low";
+    case 1:
+      return "Medium";
+    case 2:
+      return "High";
+    default:
+      return "";
+  }
+}
+
+function formatDate(date: string) {
+  return new Date(date).toLocaleDateString("en-GB", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
 }

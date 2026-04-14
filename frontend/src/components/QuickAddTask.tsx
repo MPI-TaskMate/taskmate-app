@@ -43,7 +43,6 @@ export default function QuickAddTask({ onTaskCreated }: Props) {
           onChange={(e) => setTitle(e.target.value)}
           className={styles.quickAddInput}
         />
-
         <button type="submit" className={styles.quickAddButton}>
           +
         </button>
