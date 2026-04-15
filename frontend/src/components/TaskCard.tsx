@@ -8,6 +8,7 @@ type TaskCardProps = {
   showStatus?: boolean;
   onPinToggle?: (taskId: string) => void;
   onEdit?: (task: TaskItem) => void;
+  onDelete?: (task: TaskItem) => void;
 };
 
 export default function TaskCard({
@@ -15,6 +16,7 @@ export default function TaskCard({
   showStatus = false,
   onPinToggle,
   onEdit,
+  onDelete,
 }: TaskCardProps) {
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -70,6 +72,17 @@ export default function TaskCard({
                   }}
                 >
                   Edit
+                </button>
+
+                <button
+                  type="button"
+                  className={`${styles.menuItem} ${styles.deleteMenuItem}`}
+                  onClick={() => {
+                    setMenuOpen(false);
+                    onDelete?.(task);
+                  }}
+                >
+                  Delete
                 </button>
               </div>
             )}

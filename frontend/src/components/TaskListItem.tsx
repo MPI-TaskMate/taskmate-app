@@ -11,9 +11,15 @@ type Props = {
   task: TaskItem;
   onPinToggle: (id: string) => void;
   onEdit: (task: TaskItem) => void;
+  onDelete: (task: TaskItem) => void;
 };
 
-export default function TaskListItem({ task, onPinToggle, onEdit }: Props) {
+export default function TaskListItem({
+  task,
+  onPinToggle,
+  onEdit,
+  onDelete,
+}: Props) {
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
@@ -72,6 +78,18 @@ export default function TaskListItem({ task, onPinToggle, onEdit }: Props) {
               }}
             >
               Edit
+            </button>
+
+            <button
+              type="button"
+              className={`${styles.menuItem} ${styles.deleteMenuItem}`}
+              onClick={(e) => {
+                e.stopPropagation();
+                setMenuOpen(false);
+                onDelete(task);
+              }}
+            >
+              Delete
             </button>
           </div>
         )}
