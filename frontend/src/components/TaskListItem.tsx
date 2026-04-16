@@ -6,6 +6,7 @@ import {
   type TaskStatus,
   TASK_STATUS,
 } from "../services/tasksService";
+import { getDeadlineStatus, formatDate } from "../utils/dateUtils";
 
 type Props = {
   task: TaskItem;
@@ -21,6 +22,11 @@ export default function TaskListItem({
   onDelete,
 }: Props) {
   const [menuOpen, setMenuOpen] = useState(false);
+
+  const deadlineStatus =
+    task.status !== TASK_STATUS.Done
+      ? getDeadlineStatus(task.deadline)
+      : "none";
 
   return (
     <div className={styles.listRow}>
@@ -39,7 +45,15 @@ export default function TaskListItem({
 
       <div className={styles.colDeadline}>
         {task.deadline ? (
-          <span className={styles.deadline}>{formatDate(task.deadline)}</span>
+          <span
+            className={`
+        ${styles.deadline}
+        ${deadlineStatus === "overdue" ? styles.deadlineOverdue : ""}
+        ${deadlineStatus === "today" ? styles.deadlineToday : ""}
+      `}
+          >
+            {formatDate(task.deadline)}
+          </span>
         ) : (
           "-"
         )}
@@ -93,6 +107,7 @@ export default function TaskListItem({
             </button>
           </div>
         )}
+
         <div className={styles.colPin}>
           <button
             type="button"
@@ -167,12 +182,4 @@ function getStatusClass(status: TaskStatus) {
     default:
       return "";
   }
-}
-
-function formatDate(date: string) {
-  return new Date(date).toLocaleDateString("en-GB", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  });
 }
