@@ -1,7 +1,12 @@
 import { useState } from "react";
 import { useDraggable } from "@dnd-kit/core";
 import styles from "../styles/dashboard.module.css";
-import { type TaskItem, type TaskPriority } from "../services/tasksService";
+import {
+  type TaskItem,
+  type TaskPriority,
+  TASK_STATUS,
+} from "../services/tasksService";
+import { getDeadlineStatus, formatDate } from "../utils/dateUtils";
 
 type TaskCardProps = {
   task: TaskItem;
@@ -20,6 +25,11 @@ export default function TaskCard({
 }: TaskCardProps) {
   const [menuOpen, setMenuOpen] = useState(false);
 
+  const deadlineStatus =
+    task.status !== TASK_STATUS.Done
+      ? getDeadlineStatus(task.deadline)
+      : "none";
+
   const { attributes, listeners, setNodeRef, transform } = useDraggable({
     id: task.id,
     data: { status: task.status },
@@ -30,7 +40,7 @@ export default function TaskCard({
       ref={setNodeRef}
       {...listeners}
       {...attributes}
-      className={showStatus ? styles.listCard : styles.taskCard}
+      className={`${showStatus ? styles.listCard : styles.taskCard}`}
       style={{
         transform: transform
           ? `translate(${transform.x}px, ${transform.y}px)`
@@ -87,6 +97,7 @@ export default function TaskCard({
               </div>
             )}
           </div>
+
           <button
             type="button"
             className={styles.pinButton}
@@ -109,12 +120,14 @@ export default function TaskCard({
 
       <div className={styles.cardFooter}>
         {task.deadline && (
-          <span className={styles.deadline}>
-            <img
-              src="/assets/icons/clock-icon.png"
-              alt="deadline"
-              className={styles.deadlineIcon}
-            />
+          <span
+            className={`
+            ${styles.deadline}
+            ${deadlineStatus === "overdue" ? styles.deadlineOverdue : ""}
+            ${deadlineStatus === "today" ? styles.deadlineToday : ""}
+          `}
+          >
+            <span className={styles.deadlineIcon} />
             {formatDate(task.deadline)}
           </span>
         )}
@@ -147,12 +160,4 @@ function getPriorityLabel(priority: TaskPriority) {
     default:
       return "";
   }
-}
-
-function formatDate(date: string) {
-  return new Date(date).toLocaleDateString("en-GB", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  });
 }
