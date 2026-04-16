@@ -56,6 +56,7 @@ jobs:
           Jwt__Audience: "TaskMate.Client"
           Jwt__ExpiresInHours: "24"
           ASPNETCORE_URLS: "http://+:5048"
+          ASPNETCORE_ENVIRONMENT: "Development"
         run: |
           dotnet run --project backend/TaskMate.API --no-launch-profile &
           echo "Waiting for API..."
