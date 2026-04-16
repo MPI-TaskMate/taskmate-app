@@ -39,6 +39,29 @@ jobs:
         with:
           dotnet-version: 9.0.x
 
+      - name: Start SQL Server
+        run: |
+          docker run -e "ACCEPT_EULA=Y" -e "SA_PASSWORD=TestPassword123!" \
+            -p 1433:1433 --name mssql \
+            -d mcr.microsoft.com/mssql/server:2022-latest
+          echo "Waiting for SQL Server..."
+          timeout 60 bash -c 'until docker exec mssql /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P TestPassword123! -Q "SELECT 1" -No 2>/dev/null; do sleep 3; done'
+          echo "SQL Server ready"
+
+      - name: Start backend API
+        env:
+          ConnectionStrings__DefaultConnection: "Server=localhost,1433;Database=TaskMateDb;User Id=sa;Password=TestPassword123!;TrustServerCertificate=True;Encrypt=False;"
+          Jwt__Key: "ThisIsASecretKeyForTaskMateJwt123!"
+          Jwt__Issuer: "TaskMate.API"
+          Jwt__Audience: "TaskMate.Client"
+          Jwt__ExpiresInHours: "24"
+          ASPNETCORE_URLS: "http://+:5048"
+        run: |
+          dotnet run --project backend/TaskMate.API --no-launch-profile &
+          echo "Waiting for API..."
+          timeout 60 bash -c 'until curl -sf http://localhost:5048/swagger/index.html; do sleep 2; done'
+          echo "API ready"
+
       - run: dotnet restore backend/TaskMate.Tests
 
       - run: dotnet test backend/TaskMate.Tests
