@@ -17,8 +17,9 @@ import {
   type CreateTaskRequest,
 } from "../services/tasksService";
 import styles from "../styles/dashboard.module.css";
+import TaskCalendar from "../components/TaskCalendar";
 
-type ViewMode = "list" | "kanban";
+type ViewMode = "list" | "kanban" | "calendar";
 
 export default function DashboardPage() {
   const [viewMode, setViewMode] = useState<ViewMode>("kanban");
@@ -348,7 +349,7 @@ export default function DashboardPage() {
               />
             </section>
           </DndContext>
-        ) : (
+        ) : viewMode === "list" ? (
           <section className={styles.listView}>
             <div className={styles.listHeader}>
               <span>Task</span>
@@ -367,6 +368,8 @@ export default function DashboardPage() {
               />
             ))}
           </section>
+        ) : (
+          <TaskCalendar tasks={filteredTasks} />
         )}
         {isTaskFormOpen && (
           <TaskForm

@@ -1,0 +1,231 @@
+.fc .fc-scrollgrid {
+  border-radius: 20px;
+  overflow: hidden;
+  background: var(--neutral-50);
+}
+
+.fc-toolbar-title {
+  color: var(--color-primary);
+}
+
+.fc .fc-col-header-cell {
+  padding: 16px 0;
+}
+
+.fc .fc-col-header-cell:last-child {
+  border-right: none;
+}
+
+.fc-toolbar-title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--neutral-700);
+}
+
+.fc .fc-col-header {
+  background: var(--neutral-100);
+}
+
+.fc .fc-scrollgrid thead tr:first-child th:first-child {
+  border-top-left-radius: 20px;
+}
+
+.fc .fc-scrollgrid thead tr:first-child th:last-child {
+  border-top-right-radius: 20px;
+}
+
+.fc .fc-col-header-cell-cushion {
+  color: var(--color-primary);
+  font-weight: 800;
+  font-size: 1rem;
+  text-decoration: none;
+}
+
+.fc .fc-daygrid-body table {
+  table-layout: fixed;
+}
+
+.fc .fc-daygrid-day-frame {
+  height: 140px;
+  padding: 6px;
+}
+
+.fc .fc-daygrid-event,
+.fc .fc-daygrid-event-harness,
+.fc .fc-event {
+  background: transparent !important;
+  box-shadow: none !important;
+  border: none !important;
+}
+
+.calendarMiniCard {
+  width: 100%;
+  display: block;
+  border-radius: 10px;
+  padding: 6px 8px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.calendarMiniCard:hover {
+  transform: translateY(-2px);
+}
+
+.todo .calendarMiniCard {
+  background: var(--color-primary-light);
+  color: var(--color-primary-dark);
+}
+
+.inProgress .calendarMiniCard {
+  background: var(--color-accent-light);
+  color: var(--color-accent-dark);
+}
+
+.done .calendarMiniCard {
+  background: var(--color-secondary-light);
+  color: var(--color-secondary-dark);
+}
+
+.fc-daygrid-more-link {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 8px;
+  background: var(--color-primary-light);
+  color: var(--color-primary-dark) !important;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-decoration: none !important;
+  transition: all 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.fc-daygrid-more-link:hover,
+.fc-daygrid-more-link:focus,
+.fc-daygrid-more-link:active,
+.fc-daygrid-more-link:visited,
+.fc-daygrid-more-link:focus-visible {
+  background: var(--color-primary-light) !important;
+  color: var(--color-primary-dark) !important;
+
+  outline: none !important;
+  box-shadow: none !important;
+  text-decoration: none !important;
+}
+
+.fc .fc-daygrid-more-link {
+  background-color: var(--color-primary-light) !important;
+}
+
+.fc .fc-day-today {
+  background: transparent !important;
+}
+
+.fc .fc-day-today .fc-daygrid-day-number {
+  background: var(--color-primary);
+  color: white;
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.fc .fc-toolbar-chunk:last-child {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.fc .fc-button-group {
+  display: flex;
+  gap: 8px;
+}
+
+.fc .fc-button-group > .fc-button {
+  border-radius: 50% !important;
+}
+
+.fc .fc-button {
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  border: none;
+  background: var(--color-primary);
+  color: white;
+  font-size: 14px;
+  font-weight: bold;
+  transition: all 0.2s ease;
+}
+
+.fc .fc-button:hover {
+  background: var(--color-primary-dark);
+  transform: translateY(-1px);
+}
+
+.fc .fc-button:active {
+  transform: scale(0.92);
+}
+
+.fc .fc-button:focus,
+.fc .fc-button:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.fc .fc-today-button {
+  height: 36px;
+  padding: 0 25px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  background: white;
+  color: var(--neutral-700);
+  font-size: 0.8rem;
+  font-weight: 600;
+  border: 1px solid var(--neutral-200);
+  transition: all 0.2s ease;
+}
+
+.fc .fc-today-button:hover {
+  background: var(--color-primary);
+  border-color: transparent;
+  color: white;
+}
+
+.fc .fc-popover {
+  border-radius: 16px;
+  border: none;
+  background: var(--neutral-100);
+  box-shadow: 0 20px 40px rgba(15, 23, 42, 0.15);
+  overflow: hidden;
+}
+
+.fc .fc-popover-body {
+  background: var(--neutral-100);
+}
+
+.fc .fc-popover-header {
+  background: var(--color-primary);
+}
+
+.fc .fc-daygrid-day-number {
+  color: var(--neutral-500);
+  font-weight: 500;
+}
+
+.fc,
+.fc * {
+  border-color: var(--neutral-300) !important;
+}
