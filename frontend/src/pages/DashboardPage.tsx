@@ -16,8 +16,15 @@ import {
   TASK_STATUS,
   type CreateTaskRequest,
 } from "../services/tasksService";
+import {
+  getSubjects,
+  createSubject,
+  deleteSubject,
+  type Subject,
+} from "../services/subjectsService";
 import styles from "../styles/dashboard.module.css";
 import TaskCalendar from "../components/TaskCalendar";
+import Sidebar from "../components/Sidebar";
 
 type ViewMode = "list" | "kanban" | "calendar";
 
@@ -33,6 +40,8 @@ export default function DashboardPage() {
   const [isTaskFormOpen, setIsTaskFormOpen] = useState(false);
   const [editingTask, setEditingTask] = useState<TaskItem | null>(null);
   const [taskToDelete, setTaskToDelete] = useState<TaskItem | null>(null);
+  const [subjects, setSubjects] = useState<Subject[]>([]);
+  const [subjectError, setSubjectError] = useState("");
 
   function handleOpenCreateForm() {
     setEditingTask(null);
@@ -74,11 +83,6 @@ export default function DashboardPage() {
     }
 
     handleCloseTaskForm();
-  }
-
-  async function handleQuickTaskCreated(values: CreateTaskRequest) {
-    const newTask = await createTask(values);
-    setTasks((prev) => [newTask, ...prev]);
   }
 
   async function handleConfirmDelete() {
@@ -196,6 +200,49 @@ export default function DashboardPage() {
     loadTasks();
   }, []);
 
+  useEffect(() => {
+    getSubjects()
+      .then(setSubjects)
+      .catch(() => setSubjectError("Failed to load subjects."));
+  }, []);
+
+  async function handleAddSubject(name: string, color: string) {
+    if (!name.trim()) {
+      setSubjectError("Name is required");
+      return;
+    }
+
+    try {
+      const subject = await createSubject({
+        name: name.trim(),
+        color,
+      });
+
+      setSubjects((prev) => [...prev, subject]);
+      setSubjectError("");
+    } catch (err) {
+      if (err instanceof Error) {
+        setSubjectError(err.message);
+      } else {
+        setSubjectError("Failed to create subject.");
+      }
+    }
+  }
+
+  async function handleDeleteSubject(id: string) {
+    try {
+      await deleteSubject(id);
+      setSubjects((prev) => prev.filter((s) => s.id !== id));
+      setSubjectError("");
+    } catch (err) {
+      if (err instanceof Error) {
+        setSubjectError(err.message);
+      } else {
+        setSubjectError("Failed to delete subject.");
+      }
+    }
+  }
+
   const filteredTasks = useMemo(() => {
     let result = tasks;
 
@@ -256,135 +303,154 @@ export default function DashboardPage() {
 
   return (
     <main className={styles.page}>
-      <div className="container">
-        <div className={styles.header}>
-          {actionError && (
-            <div className={styles.errorBanner}>{actionError}</div>
-          )}
-          <div>
-            <h1>Dashboard</h1>
-            <p>Stay organized and get things done.</p>
-          </div>
-
-          <ViewToggle viewMode={viewMode} onChange={setViewMode} />
-        </div>
-
-        <div className={styles.actionsRow}>
-          <button
-            onClick={handleOpenCreateForm}
-            className={styles.addTaskButton}
-          >
-            + Create Task
-          </button>
-
-          <div className={styles.searchContainer}>
-            <div className={styles.searchWrapper}>
-              <img
-                src="/assets/icons/search-icon.svg"
-                className={styles.iconDefault}
-              />
-              <img
-                src="/assets/icons/search-icon-hover.svg"
-                className={styles.iconHover}
-              />
-              <input
-                type="text"
-                placeholder="Search tasks..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className={styles.searchInput}
-              />
-            </div>
-            <div className={styles.focusWrapper}>
-              <div className={styles.focusButtons}>
-                {!focusMode ? (
-                  <button onClick={() => setFocusMode(true)}>Focus Mode</button>
-                ) : (
-                  <button onClick={() => setFocusMode(false)}>Show all</button>
-                )}
-              </div>
-              {focusMode && (
-                <p className={styles.focusIndicator}>Showing today's tasks</p>
+      <div className={styles.layout}>
+        <Sidebar
+          subjects={subjects}
+          onAdd={handleAddSubject}
+          onDelete={handleDeleteSubject}
+          subjectError={subjectError}
+        />
+        <div className={styles.content}>
+          <div className="container">
+            <div className={styles.header}>
+              {actionError && (
+                <div className={styles.errorBanner}>{actionError}</div>
               )}
+              <div>
+                <h1>Dashboard</h1>
+                <p>Stay organized and get things done.</p>
+              </div>
+
+              <ViewToggle viewMode={viewMode} onChange={setViewMode} />
             </div>
+
+            <div className={styles.actionsRow}>
+              <button
+                onClick={handleOpenCreateForm}
+                className={styles.addTaskButton}
+              >
+                + Create Task
+              </button>
+
+              <div className={styles.searchContainer}>
+                <div className={styles.searchWrapper}>
+                  <img
+                    src="/assets/icons/search-icon.svg"
+                    className={styles.iconDefault}
+                  />
+                  <img
+                    src="/assets/icons/search-icon-hover.svg"
+                    className={styles.iconHover}
+                  />
+                  <input
+                    type="text"
+                    placeholder="Search tasks..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className={styles.searchInput}
+                  />
+                </div>
+
+                <div className={styles.focusWrapper}>
+                  <div className={styles.focusButtons}>
+                    {!focusMode ? (
+                      <button onClick={() => setFocusMode(true)}>
+                        Focus Mode
+                      </button>
+                    ) : (
+                      <button onClick={() => setFocusMode(false)}>
+                        Show all
+                      </button>
+                    )}
+                  </div>
+
+                  {focusMode && (
+                    <p className={styles.focusIndicator}>
+                      Showing today's tasks
+                    </p>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {filteredTasks.length === 0 ? (
+              <div className={styles.emptyState}>
+                <h3>No tasks yet</h3>
+                <p>Start by adding your first task.</p>
+              </div>
+            ) : viewMode === "kanban" ? (
+              <DndContext
+                collisionDetection={closestCenter}
+                onDragEnd={handleDragEnd}
+              >
+                <section className={styles.kanbanBoard}>
+                  <KanbanColumn
+                    title="Todo"
+                    status={TASK_STATUS.Todo}
+                    tasks={todoTasks}
+                    onPinToggle={handlePinToggle}
+                    onEdit={handleOpenEditForm}
+                    onDelete={handleDeleteTask}
+                  />
+                  <KanbanColumn
+                    title="In Progress"
+                    status={TASK_STATUS.InProgress}
+                    tasks={inProgressTasks}
+                    onPinToggle={handlePinToggle}
+                    onEdit={handleOpenEditForm}
+                    onDelete={handleDeleteTask}
+                  />
+                  <KanbanColumn
+                    title="Done"
+                    status={TASK_STATUS.Done}
+                    tasks={doneTasks}
+                    onPinToggle={handlePinToggle}
+                    onEdit={handleOpenEditForm}
+                    onDelete={handleDeleteTask}
+                  />
+                </section>
+              </DndContext>
+            ) : viewMode === "list" ? (
+              <section className={styles.listView}>
+                <div className={styles.listHeader}>
+                  <span>Task</span>
+                  <span>Priority</span>
+                  <span>Deadline</span>
+                  <span>Status</span>
+                  <span></span>
+                </div>
+
+                {filteredTasks.map((task) => (
+                  <TaskListItem
+                    key={task.id}
+                    task={task}
+                    onPinToggle={handlePinToggle}
+                    onEdit={handleOpenEditForm}
+                    onDelete={handleDeleteTask}
+                  />
+                ))}
+              </section>
+            ) : (
+              <TaskCalendar tasks={filteredTasks} />
+            )}
+
+            {isTaskFormOpen && (
+              <TaskForm
+                initialTask={editingTask}
+                onSubmit={handleTaskSubmit}
+                onCancel={handleCloseTaskForm}
+              />
+            )}
+
+            {taskToDelete && (
+              <DeleteTaskModal
+                taskTitle={taskToDelete.title}
+                onConfirm={handleConfirmDelete}
+                onCancel={handleCloseDeleteModal}
+              />
+            )}
           </div>
         </div>
-
-        {filteredTasks.length === 0 ? (
-          <div className={styles.emptyState}>
-            <h3>No tasks yet</h3>
-            <p>Start by adding your first task or adjust your filters.</p>
-          </div>
-        ) : viewMode === "kanban" ? (
-          <DndContext
-            collisionDetection={closestCenter}
-            onDragEnd={handleDragEnd}
-          >
-            <section className={styles.kanbanBoard}>
-              <KanbanColumn
-                title="Todo"
-                status={TASK_STATUS.Todo}
-                tasks={todoTasks}
-                onPinToggle={handlePinToggle}
-                onEdit={handleOpenEditForm}
-                onDelete={handleDeleteTask}
-                showQuickAdd
-                onTaskCreated={handleQuickTaskCreated}
-              />
-              <KanbanColumn
-                title="In Progress"
-                status={TASK_STATUS.InProgress}
-                tasks={inProgressTasks}
-                onPinToggle={handlePinToggle}
-                onEdit={handleOpenEditForm}
-                onDelete={handleDeleteTask}
-              />
-              <KanbanColumn
-                title="Done"
-                status={TASK_STATUS.Done}
-                tasks={doneTasks}
-                onPinToggle={handlePinToggle}
-                onEdit={handleOpenEditForm}
-                onDelete={handleDeleteTask}
-              />
-            </section>
-          </DndContext>
-        ) : viewMode === "list" ? (
-          <section className={styles.listView}>
-            <div className={styles.listHeader}>
-              <span>Task</span>
-              <span>Priority</span>
-              <span>Deadline</span>
-              <span>Status</span>
-              <span></span>
-            </div>
-            {filteredTasks.map((task) => (
-              <TaskListItem
-                key={task.id}
-                task={task}
-                onPinToggle={handlePinToggle}
-                onEdit={handleOpenEditForm}
-                onDelete={handleDeleteTask}
-              />
-            ))}
-          </section>
-        ) : (
-          <TaskCalendar tasks={filteredTasks} />
-        )}
-        {isTaskFormOpen && (
-          <TaskForm
-            initialTask={editingTask}
-            onSubmit={handleTaskSubmit}
-            onCancel={handleCloseTaskForm}
-          />
-        )}
-        {taskToDelete && (
-          <DeleteTaskModal
-            taskTitle={taskToDelete.title}
-            onConfirm={handleConfirmDelete}
-            onCancel={handleCloseDeleteModal}
-          />
-        )}
       </div>
     </main>
   );

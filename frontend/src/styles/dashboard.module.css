@@ -1,10 +1,22 @@
 .page {
   min-height: 100vh;
-  padding: 2rem 1rem 3rem;
+  display: flex;
   background:
     linear-gradient(var(--neutral-200) 1px, transparent 1px),
     linear-gradient(90deg, var(--neutral-200) 1px, transparent 1px);
   background-size: 40px 40px;
+}
+
+.layout {
+  display: flex;
+  flex: 1;
+}
+
+.content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 2rem;
 }
 
 .header {
@@ -603,15 +615,24 @@
   max-width: 300px;
 }
 
-@media (max-width: 960px) {
+@media (max-width: 1080px) {
   .kanbanBoard {
     grid-template-columns: 1fr;
   }
 }
 
 @media (max-width: 720px) {
+  .layout {
+    flex-direction: column;
+  }
+
   .page {
-    padding: 1.25rem 0.85rem 2rem;
+    flex-direction: column;
+  }
+
+  .content {
+    padding: 1rem;
+    width: 100%;
   }
 
   .header {
@@ -638,5 +659,3 @@
     font-size: 0.98rem;
   }
 }
-
-
