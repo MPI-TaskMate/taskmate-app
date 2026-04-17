@@ -12,6 +12,7 @@ namespace TaskMate.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class TasksController : ControllerBase
     {
         private readonly AppDbContext _context;
@@ -31,7 +32,6 @@ namespace TaskMate.API.Controllers
         }
 
         [HttpPost]
-        [Authorize]
         public async Task<IActionResult> Create([FromBody] CreateTaskDto dto)
         {
             var userId = GetUserId();
@@ -71,7 +71,6 @@ namespace TaskMate.API.Controllers
         }
 
         [HttpGet]
-        [Authorize]
         public async Task<IActionResult> GetAll(
             [FromQuery] string? status = null,
             [FromQuery] string? priority = null,
@@ -192,7 +191,6 @@ namespace TaskMate.API.Controllers
         }
 
         [HttpGet("stats")]
-        [Authorize]
         public async Task<IActionResult> GetStats()
         {
             var userId = GetUserId();
@@ -228,7 +226,6 @@ namespace TaskMate.API.Controllers
         }
 
         [HttpGet("{id}")]
-        [Authorize]
         public async Task<IActionResult> GetById(Guid id)
         {
             var userId = GetUserId();
@@ -248,7 +245,6 @@ namespace TaskMate.API.Controllers
         }
 
         [HttpPut("{id}")]
-        [Authorize]
         public async Task<IActionResult> Update(Guid id, UpdateTaskDto dto)
         {
             var userId = GetUserId();
@@ -293,7 +289,6 @@ namespace TaskMate.API.Controllers
         }
 
         [HttpPatch("{id}")]
-        [Authorize]
         public async Task<IActionResult> Patch(Guid id, PatchTaskDto dto)
         {
             var userId = GetUserId();
@@ -331,7 +326,6 @@ namespace TaskMate.API.Controllers
         }
 
         [HttpDelete("{id}")]
-        [Authorize]
         public async Task<IActionResult> Delete(Guid id)
         {
             var userId = GetUserId();
