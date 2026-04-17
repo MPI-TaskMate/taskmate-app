@@ -44,12 +44,19 @@ namespace TaskMate.API.Controllers
                 return BadRequest("Title is required");
             }
 
+            if (dto.EstimatedMinutes.HasValue && dto.EstimatedMinutes.Value < 0)
+            {
+                _logger.LogWarning("Create task failed because estimatedMinutes is negative for user {UserId}", userId);
+                return BadRequest("EstimatedMinutes must be greater than or equal to 0");
+            }
+
             var task = new TaskItem
             {
                 Title = dto.Title,
                 Description = dto.Description,
                 Deadline = dto.Deadline,
                 Priority = dto.Priority,
+                EstimatedMinutes = dto.EstimatedMinutes,
                 SubjectId = dto.SubjectId,
                 UserId = GetUserId(),
                 Status = TaskStatus.Todo
@@ -78,6 +85,40 @@ namespace TaskMate.API.Controllers
             _logger.LogInformation("Fetched {Count} tasks for user {UserId}", tasks.Count, userId);
 
             return Ok(tasks);
+        }
+
+        [HttpGet("stats")]
+        [Authorize]
+        public async Task<IActionResult> GetStats()
+        {
+            var userId = GetUserId();
+            var now = DateTime.UtcNow;
+            var startOfToday = now.Date;
+            var endOfToday = startOfToday.AddDays(1);
+            var startOfWeek = startOfToday.AddDays(-((int)startOfToday.DayOfWeek + 6) % 7);
+            var endOfWeek = startOfWeek.AddDays(7);
+
+            _logger.LogInformation("Fetching task stats for user {UserId}", userId);
+
+            var totalEstimatedMinutesToday = await _context.Tasks
+                .Where(t => t.UserId == userId
+                            && t.Deadline.HasValue
+                            && t.Deadline.Value >= startOfToday
+                            && t.Deadline.Value < endOfToday)
+                .SumAsync(t => t.EstimatedMinutes ?? 0);
+
+            var totalEstimatedMinutesWeek = await _context.Tasks
+                .Where(t => t.UserId == userId
+                            && t.Deadline.HasValue
+                            && t.Deadline.Value >= startOfWeek
+                            && t.Deadline.Value < endOfWeek)
+                .SumAsync(t => t.EstimatedMinutes ?? 0);
+
+            return Ok(new
+            {
+                totalEstimatedMinutesToday,
+                totalEstimatedMinutesWeek
+            });
         }
 
         [HttpGet("{id}")]
@@ -123,11 +164,18 @@ namespace TaskMate.API.Controllers
                 return BadRequest("Title is required");
             }
 
+            if (dto.EstimatedMinutes.HasValue && dto.EstimatedMinutes.Value < 0)
+            {
+                _logger.LogWarning("Update task failed because estimatedMinutes is negative. TaskId: {TaskId}, UserId: {UserId}", id, userId);
+                return BadRequest("EstimatedMinutes must be greater than or equal to 0");
+            }
+
             task.Title = dto.Title;
             task.Description = dto.Description;
             task.Deadline = dto.Deadline;
             task.Priority = dto.Priority;
             task.Status = dto.Status;
+            task.EstimatedMinutes = dto.EstimatedMinutes;
             task.SubjectId = dto.SubjectId;
             task.UpdatedAt = DateTime.UtcNow;
 

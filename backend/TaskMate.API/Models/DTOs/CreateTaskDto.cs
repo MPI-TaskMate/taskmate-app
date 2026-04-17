@@ -12,6 +12,7 @@ public class CreateTaskDto
     public string? Description { get; set; }
     public DateTime? Deadline { get; set; }
     public TaskPriority Priority { get; set; }
+    public int? EstimatedMinutes { get; set; }
     public Guid? SubjectId { get; set; }
 }
 }
