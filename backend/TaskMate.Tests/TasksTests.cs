@@ -249,46 +249,28 @@ public class TasksTests
     }
 
     [Fact]
-    public async Task GetTaskStats_ReturnsEstimatedMinutesTodayAndWeek()
+    public async Task GetTaskStats_ReturnsCompletionCountsForAuthenticatedUser()
     {
         var client = await CreateAuthenticatedClient();
 
-        var todayDeadline = DateTime.UtcNow.AddHours(2);
-        var weekDeadline = DateTime.UtcNow.Date.AddDays(2).AddHours(1);
-        var outsideWeekDeadline = DateTime.UtcNow.Date.AddDays(10);
+        await client.PostAsync("/api/tasks", new { title = "Todo Task", priority = 0 });
+        var inProgressResp = await client.PostAsync("/api/tasks", new { title = "In Progress Task", priority = 1 });
+        var inProgressTask = await ApiClient.DeserializeAsync<Dictionary<string, JsonElement>>(inProgressResp);
+        await client.PatchAsync($"/api/tasks/{inProgressTask!["id"].GetString()}", new { status = 1 });
 
-        await client.PostAsync("/api/tasks", new
-        {
-            title = "Today Task",
-            priority = 1,
-            deadline = todayDeadline,
-            estimatedMinutes = 30
-        });
-
-        await client.PostAsync("/api/tasks", new
-        {
-            title = "Week Task",
-            priority = 1,
-            deadline = weekDeadline,
-            estimatedMinutes = 90
-        });
-
-        await client.PostAsync("/api/tasks", new
-        {
-            title = "Outside Week Task",
-            priority = 1,
-            deadline = outsideWeekDeadline,
-            estimatedMinutes = 300
-        });
+        var doneResp = await client.PostAsync("/api/tasks", new { title = "Done Task", priority = 0 });
+        var doneTask = await ApiClient.DeserializeAsync<Dictionary<string, JsonElement>>(doneResp);
+        await client.PatchAsync($"/api/tasks/{doneTask!["id"].GetString()}", new { status = 2 });
 
         var statsResponse = await client.GetAsync("/api/tasks/stats");
         var stats = await ApiClient.DeserializeAsync<Dictionary<string, JsonElement>>(statsResponse);
 
         Assert.Equal(HttpStatusCode.OK, statsResponse.StatusCode);
         Assert.NotNull(stats);
-        Assert.True(stats!.ContainsKey("totalEstimatedMinutesToday"));
-        Assert.True(stats.ContainsKey("totalEstimatedMinutesWeek"));
-        Assert.Equal(30, stats["totalEstimatedMinutesToday"].GetInt32());
-        Assert.Equal(120, stats["totalEstimatedMinutesWeek"].GetInt32());
+        Assert.Equal(3, stats!["total"].GetInt32());
+        Assert.Equal(1, stats["todo"].GetInt32());
+        Assert.Equal(1, stats["inProgress"].GetInt32());
+        Assert.Equal(1, stats["done"].GetInt32());
+        Assert.Equal(33, stats["completionPercentage"].GetInt32());
     }
 }
