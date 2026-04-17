@@ -72,15 +72,116 @@ namespace TaskMate.API.Controllers
 
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll(
+            [FromQuery] string? status = null,
+            [FromQuery] string? priority = null,
+            [FromQuery] string? subjectId = null,
+            [FromQuery] string? sortBy = null,
+            [FromQuery] string? order = null)
         {
             var userId = GetUserId();
 
+            if (!string.IsNullOrWhiteSpace(order) && string.IsNullOrWhiteSpace(sortBy))
+            {
+                _logger.LogWarning("GetAll tasks rejected: order without sortBy for user {UserId}", userId);
+                return BadRequest("sortBy is required when order is specified.");
+            }
+
+            if (!string.IsNullOrWhiteSpace(sortBy))
+            {
+                var s = sortBy.Trim();
+                if (!s.Equals("deadline", StringComparison.OrdinalIgnoreCase)
+                    && !s.Equals("priority", StringComparison.OrdinalIgnoreCase))
+                {
+                    _logger.LogWarning("GetAll tasks rejected: invalid sortBy for user {UserId}", userId);
+                    return BadRequest("sortBy must be deadline or priority.");
+                }
+            }
+
+            if (!string.IsNullOrWhiteSpace(order))
+            {
+                var o = order.Trim();
+                if (!o.Equals("asc", StringComparison.OrdinalIgnoreCase)
+                    && !o.Equals("desc", StringComparison.OrdinalIgnoreCase))
+                {
+                    _logger.LogWarning("GetAll tasks rejected: invalid order for user {UserId}", userId);
+                    return BadRequest("order must be asc or desc.");
+                }
+            }
+
+            if (!string.IsNullOrWhiteSpace(status))
+            {
+                if (!Enum.TryParse<TaskStatus>(status, true, out _))
+                {
+                    _logger.LogWarning("GetAll tasks rejected: invalid status for user {UserId}", userId);
+                    return BadRequest("status must be Todo, InProgress, or Done.");
+                }
+            }
+
+            if (!string.IsNullOrWhiteSpace(priority))
+            {
+                if (!Enum.TryParse<TaskPriority>(priority, true, out _))
+                {
+                    _logger.LogWarning("GetAll tasks rejected: invalid priority for user {UserId}", userId);
+                    return BadRequest("priority must be Low, Medium, or High.");
+                }
+            }
+
+            if (!string.IsNullOrWhiteSpace(subjectId))
+            {
+                if (!Guid.TryParse(subjectId, out _))
+                {
+                    _logger.LogWarning("GetAll tasks rejected: invalid subjectId for user {UserId}", userId);
+                    return BadRequest("subjectId must be a valid GUID.");
+                }
+            }
+
             _logger.LogInformation("Fetching tasks for user {UserId}", userId);
 
-            var tasks = await _context.Tasks
-                .Where(t => t.UserId == userId)
-                .ToListAsync();
+            var query = _context.Tasks.AsQueryable().Where(t => t.UserId == userId);
+
+            if (!string.IsNullOrWhiteSpace(status)
+                && Enum.TryParse<TaskStatus>(status, true, out var statusFilter))
+            {
+                query = query.Where(t => t.Status == statusFilter);
+            }
+
+            if (!string.IsNullOrWhiteSpace(priority)
+                && Enum.TryParse<TaskPriority>(priority, true, out var priorityFilter))
+            {
+                query = query.Where(t => t.Priority == priorityFilter);
+            }
+
+            if (!string.IsNullOrWhiteSpace(subjectId) && Guid.TryParse(subjectId, out var subjectGuid))
+            {
+                query = query.Where(t => t.SubjectId == subjectGuid);
+            }
+
+            var sortDescending = !string.IsNullOrWhiteSpace(order)
+                && order!.Trim().Equals("desc", StringComparison.OrdinalIgnoreCase);
+
+            if (!string.IsNullOrWhiteSpace(sortBy))
+            {
+                var sortKey = sortBy.Trim();
+                if (sortKey.Equals("deadline", StringComparison.OrdinalIgnoreCase))
+                {
+                    query = sortDescending
+                        ? query.OrderBy(t => t.Deadline == null).ThenByDescending(t => t.Deadline)
+                        : query.OrderBy(t => t.Deadline == null).ThenBy(t => t.Deadline);
+                }
+                else
+                {
+                    query = sortDescending
+                        ? query.OrderByDescending(t => t.Priority)
+                        : query.OrderBy(t => t.Priority);
+                }
+            }
+            else
+            {
+                query = query.OrderByDescending(t => t.CreatedAt);
+            }
+
+            var tasks = await query.ToListAsync();
 
             var utcNow = DateTime.UtcNow;
             var response = tasks.Select(t => TaskItemResponse.From(t, utcNow)).ToList();
