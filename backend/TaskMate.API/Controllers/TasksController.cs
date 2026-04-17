@@ -82,9 +82,12 @@ namespace TaskMate.API.Controllers
                 .Where(t => t.UserId == userId)
                 .ToListAsync();
 
-            _logger.LogInformation("Fetched {Count} tasks for user {UserId}", tasks.Count, userId);
+            var utcNow = DateTime.UtcNow;
+            var response = tasks.Select(t => TaskItemResponse.From(t, utcNow)).ToList();
 
-            return Ok(tasks);
+            _logger.LogInformation("Fetched {Count} tasks for user {UserId}", response.Count, userId);
+
+            return Ok(response);
         }
 
         [HttpGet("stats")]
