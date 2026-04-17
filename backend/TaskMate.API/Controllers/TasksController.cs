@@ -72,14 +72,22 @@ namespace TaskMate.API.Controllers
 
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll([FromQuery] string? search = null)
         {
             var userId = GetUserId();
 
-            _logger.LogInformation("Fetching tasks for user {UserId}", userId);
+            _logger.LogInformation("Fetching tasks for user {UserId} with search query '{SearchQuery}'", userId, search);
 
-            var tasks = await _context.Tasks
-                .Where(t => t.UserId == userId)
+            var query = _context.Tasks
+                .Where(t => t.UserId == userId);
+
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                var normalizedSearch = search.Trim().ToLower();
+                query = query.Where(t => t.Title.ToLower().Contains(normalizedSearch));
+            }
+
+            var tasks = await query
                 .ToListAsync();
 
             _logger.LogInformation("Fetched {Count} tasks for user {UserId}", tasks.Count, userId);
