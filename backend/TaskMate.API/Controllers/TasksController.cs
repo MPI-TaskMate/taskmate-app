@@ -196,32 +196,34 @@ namespace TaskMate.API.Controllers
         public async Task<IActionResult> GetStats()
         {
             var userId = GetUserId();
-            var now = DateTime.UtcNow;
-            var startOfToday = now.Date;
-            var endOfToday = startOfToday.AddDays(1);
-            var startOfWeek = startOfToday.AddDays(-((int)startOfToday.DayOfWeek + 6) % 7);
-            var endOfWeek = startOfWeek.AddDays(7);
 
-            _logger.LogInformation("Fetching task stats for user {UserId}", userId);
+            _logger.LogInformation("Fetching task completion stats for user {UserId}", userId);
 
-            var totalEstimatedMinutesToday = await _context.Tasks
-                .Where(t => t.UserId == userId
-                            && t.Deadline.HasValue
-                            && t.Deadline.Value >= startOfToday
-                            && t.Deadline.Value < endOfToday)
-                .SumAsync(t => t.EstimatedMinutes ?? 0);
+            var byStatus = await _context.Tasks
+                .AsNoTracking()
+                .Where(t => t.UserId == userId)
+                .GroupBy(t => t.Status)
+                .Select(g => new { Status = g.Key, Count = g.Count() })
+                .ToListAsync();
 
-            var totalEstimatedMinutesWeek = await _context.Tasks
-                .Where(t => t.UserId == userId
-                            && t.Deadline.HasValue
-                            && t.Deadline.Value >= startOfWeek
-                            && t.Deadline.Value < endOfWeek)
-                .SumAsync(t => t.EstimatedMinutes ?? 0);
+            var countByStatus = byStatus.ToDictionary(x => x.Status, x => x.Count);
+
+            int CountFor(TaskStatus s) => countByStatus.GetValueOrDefault(s);
+
+            var todo = CountFor(TaskStatus.Todo);
+            var inProgress = CountFor(TaskStatus.InProgress);
+            var done = CountFor(TaskStatus.Done);
+            var total = todo + inProgress + done;
+
+            var completionPercentage = total == 0 ? 0 : done * 100 / total;
 
             return Ok(new
             {
-                totalEstimatedMinutesToday,
-                totalEstimatedMinutesWeek
+                total,
+                done,
+                inProgress,
+                todo,
+                completionPercentage
             });
         }
 

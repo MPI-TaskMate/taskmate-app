@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
+using System.Text.Json;
 using TaskMate.API.Data;
 using TaskMate.API.Middleware;
 using TaskMate.API.Services;
@@ -15,7 +16,11 @@ builder.Logging.AddConsole();
 builder.Logging.AddDebug();
 
 // Controllers
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+    });
 
 // Swagger
 builder.Services.AddEndpointsApiExplorer();
