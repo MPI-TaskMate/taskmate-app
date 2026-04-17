@@ -45,6 +45,26 @@ public class TasksTests
         Assert.Equal(HttpStatusCode.Created, response.StatusCode);
     }
 
+    [Fact]
+    public async Task CreateTask_WithEstimatedMinutes_PersistsValue()
+    {
+        var client = await CreateAuthenticatedClient();
+
+        var response = await client.PostAsync("/api/tasks", new
+        {
+            title = "Task with estimate",
+            priority = 1,
+            estimatedMinutes = 45
+        });
+
+        var createdTask = await ApiClient.DeserializeAsync<Dictionary<string, JsonElement>>(response);
+
+        Assert.Equal(HttpStatusCode.Created, response.StatusCode);
+        Assert.NotNull(createdTask);
+        Assert.True(createdTask!.ContainsKey("estimatedMinutes"));
+        Assert.Equal(45, createdTask["estimatedMinutes"].GetInt32());
+    }
+
     // TC-TASK-02: Creare task fără titlu → 400
     [Fact]
     public async Task CreateTask_WithoutTitle_Returns400()
@@ -127,6 +147,31 @@ public class TasksTests
         Assert.Equal(HttpStatusCode.OK, updateResponse.StatusCode);
     }
 
+    [Fact]
+    public async Task UpdateTask_WithEstimatedMinutes_UpdatesValue()
+    {
+        var client = await CreateAuthenticatedClient();
+
+        var createResponse = await client.PostAsync("/api/tasks", new { title = "Original Title", priority = 0 });
+        var createdTask = await ApiClient.DeserializeAsync<Dictionary<string, JsonElement>>(createResponse);
+        var taskId = createdTask!["id"].GetString();
+
+        var updateResponse = await client.PutAsync($"/api/tasks/{taskId}", new
+        {
+            title = "Updated Title",
+            priority = 2,
+            status = 1,
+            estimatedMinutes = 120
+        });
+
+        var updatedTask = await ApiClient.DeserializeAsync<Dictionary<string, JsonElement>>(updateResponse);
+
+        Assert.Equal(HttpStatusCode.OK, updateResponse.StatusCode);
+        Assert.NotNull(updatedTask);
+        Assert.True(updatedTask!.ContainsKey("estimatedMinutes"));
+        Assert.Equal(120, updatedTask["estimatedMinutes"].GetInt32());
+    }
+
     // TC-TASK-07: Editare task inexistent → 404
     [Fact]
     public async Task UpdateTask_NonExisting_Returns404()
@@ -201,5 +246,49 @@ public class TasksTests
         var patchResponse = await client.PatchAsync($"/api/tasks/{taskId}", new { status = 2 }); // Done
 
         Assert.Equal(HttpStatusCode.OK, patchResponse.StatusCode);
+    }
+
+    [Fact]
+    public async Task GetTaskStats_ReturnsEstimatedMinutesTodayAndWeek()
+    {
+        var client = await CreateAuthenticatedClient();
+
+        var todayDeadline = DateTime.UtcNow.AddHours(2);
+        var weekDeadline = DateTime.UtcNow.Date.AddDays(2).AddHours(1);
+        var outsideWeekDeadline = DateTime.UtcNow.Date.AddDays(10);
+
+        await client.PostAsync("/api/tasks", new
+        {
+            title = "Today Task",
+            priority = 1,
+            deadline = todayDeadline,
+            estimatedMinutes = 30
+        });
+
+        await client.PostAsync("/api/tasks", new
+        {
+            title = "Week Task",
+            priority = 1,
+            deadline = weekDeadline,
+            estimatedMinutes = 90
+        });
+
+        await client.PostAsync("/api/tasks", new
+        {
+            title = "Outside Week Task",
+            priority = 1,
+            deadline = outsideWeekDeadline,
+            estimatedMinutes = 300
+        });
+
+        var statsResponse = await client.GetAsync("/api/tasks/stats");
+        var stats = await ApiClient.DeserializeAsync<Dictionary<string, JsonElement>>(statsResponse);
+
+        Assert.Equal(HttpStatusCode.OK, statsResponse.StatusCode);
+        Assert.NotNull(stats);
+        Assert.True(stats!.ContainsKey("totalEstimatedMinutesToday"));
+        Assert.True(stats.ContainsKey("totalEstimatedMinutesWeek"));
+        Assert.Equal(30, stats["totalEstimatedMinutesToday"].GetInt32());
+        Assert.Equal(120, stats["totalEstimatedMinutesWeek"].GetInt32());
     }
 }

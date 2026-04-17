@@ -15,6 +15,7 @@ public class UpdateTaskDto
     public DateTime? Deadline { get; set; }
     public TaskPriority Priority { get; set; }
     public TaskStatus Status { get; set; }
+    public int? EstimatedMinutes { get; set; }
     public Guid? SubjectId { get; set; }
 }
 }
