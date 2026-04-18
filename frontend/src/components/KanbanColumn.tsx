@@ -1,5 +1,6 @@
 import { useDroppable } from "@dnd-kit/core";
 import styles from "../styles/dashboard.module.css";
+import { type Subject } from "../services/subjectsService";
 import {
   type TaskItem,
   type CreateTaskRequest,
@@ -11,6 +12,7 @@ type KanbanColumnProps = {
   title: string;
   status: TaskItem["status"];
   tasks: TaskItem[];
+  subjects: Subject[];
   onPinToggle?: (taskId: string) => void;
   onEdit: (task: TaskItem) => void;
   onDelete: (task: TaskItem) => void;
@@ -22,6 +24,7 @@ export default function KanbanColumn({
   title,
   status,
   tasks,
+  subjects,
   onPinToggle,
   onEdit,
   onDelete,
@@ -48,6 +51,7 @@ export default function KanbanColumn({
           <TaskCard
             key={task.id}
             task={task}
+            subjects={subjects}
             onPinToggle={onPinToggle}
             onEdit={onEdit}
             onDelete={onDelete}
