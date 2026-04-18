@@ -4,11 +4,11 @@ using TaskMate.Tests.Helpers;
 namespace TaskMate.Tests;
 
 /// <summary>
-/// TC-INFRA: Smoke tests — verifică că infrastructura Docker e funcțională (#67)
+/// TC-INFRA: Smoke tests — verifies that Docker infrastructure is functional (#67)
 /// </summary>
 public class SmokeTests
 {
-    // TC-INFRA-01: API pornit — Swagger returnează 200
+    // TC-INFRA-01: API is running — Swagger returns 200
     [Fact]
     public async Task Api_IsRunning_SwaggerReturns200()
     {
@@ -18,7 +18,7 @@ public class SmokeTests
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
-    // TC-INFRA-02: Endpoint-ul de auth e accesibil (nu returnează 500)
+    // TC-INFRA-02: Auth endpoint is reachable (does not return 500)
     [Fact]
     public async Task Api_AuthEndpoint_IsReachable()
     {
@@ -28,7 +28,7 @@ public class SmokeTests
         Assert.NotEqual(HttpStatusCode.InternalServerError, response.StatusCode);
     }
 
-    // TC-INFRA-03: Endpoint-ul de tasks necesită autentificare (returnează 401, nu 500)
+    // TC-INFRA-03: Tasks endpoint requires authentication (returns 401, not 500)
     [Fact]
     public async Task Api_TasksEndpoint_RequiresAuth_Returns401()
     {
