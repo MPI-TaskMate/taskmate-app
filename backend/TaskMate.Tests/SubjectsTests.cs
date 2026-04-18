@@ -5,8 +5,8 @@ using TaskMate.Tests.Helpers;
 namespace TaskMate.Tests;
 
 /// <summary>
-/// TC-SUBJECT: Teste de integrare pentru gestionarea subiectelor (#66)
-/// Acoperă: creare, listare, editare, ștergere subjects
+/// TC-SUBJECT: Integration tests for subject management (#66)
+/// Covers: create, list, edit, delete subjects
 /// </summary>
 public class SubjectsTests
 {
@@ -29,7 +29,7 @@ public class SubjectsTests
 
     // ─── CREATE ───────────────────────────────────────────────────────────────
 
-    // TC-SUBJECT-01: Creare subject cu date valide → 201
+    // TC-SUBJECT-01: Create subject with valid data → 201
     [Fact]
     public async Task CreateSubject_WithValidData_Returns201()
     {
@@ -44,7 +44,7 @@ public class SubjectsTests
         Assert.Equal(HttpStatusCode.Created, response.StatusCode);
     }
 
-    // TC-SUBJECT-02: Creare subject fără nume → 400
+    // TC-SUBJECT-02: Create subject without name → 400
     [Fact]
     public async Task CreateSubject_WithoutName_Returns400()
     {
@@ -59,7 +59,7 @@ public class SubjectsTests
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
     }
 
-    // TC-SUBJECT-03: Creare subject fără autentificare → 401
+    // TC-SUBJECT-03: Create subject without authentication → 401
     [Fact]
     public async Task CreateSubject_WithoutAuth_Returns401()
     {
@@ -76,7 +76,7 @@ public class SubjectsTests
 
     // ─── READ ─────────────────────────────────────────────────────────────────
 
-    // TC-SUBJECT-04: Listare subjects autentificat → 200
+    // TC-SUBJECT-04: List subjects authenticated → 200
     [Fact]
     public async Task GetSubjects_Authenticated_Returns200()
     {
@@ -87,7 +87,7 @@ public class SubjectsTests
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
-    // TC-SUBJECT-05: Un user nu vede subjects-urile altui user
+    // TC-SUBJECT-05: A user does not see another user's subjects
     [Fact]
     public async Task GetSubjects_DoesNotReturnOtherUsersSubjects()
     {
@@ -106,7 +106,7 @@ public class SubjectsTests
 
     // ─── DELETE ───────────────────────────────────────────────────────────────
 
-    // TC-SUBJECT-08: Ștergere subject existent → 204
+    // TC-SUBJECT-08: Delete existing subject → 204
     [Fact]
     public async Task DeleteSubject_Existing_Returns204()
     {
@@ -121,7 +121,7 @@ public class SubjectsTests
         Assert.Equal(HttpStatusCode.NoContent, deleteResponse.StatusCode);
     }
 
-    // TC-SUBJECT-09: Ștergere subject inexistent → 404
+    // TC-SUBJECT-09: Delete non-existing subject → 404
     [Fact]
     public async Task DeleteSubject_NonExisting_Returns404()
     {

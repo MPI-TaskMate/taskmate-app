@@ -5,8 +5,8 @@ using TaskMate.Tests.Helpers;
 namespace TaskMate.Tests;
 
 /// <summary>
-/// TC-FILTER: Teste de integrare pentru filtrare și sortare task-uri (#64)
-/// Acoperă: filter status/priority, sort deadline/priority, validări parametri invalizi
+/// TC-FILTER: Integration tests for task filtering and sorting (#64)
+/// Covers: filter by status/priority, sort by deadline/priority, invalid parameter validation
 /// </summary>
 public class TasksFilterSortTests
 {
@@ -29,7 +29,7 @@ public class TasksFilterSortTests
 
     // ─── FILTER STATUS ────────────────────────────────────────────────────────
 
-    // TC-FILTER-01: Filter după status=Todo → returnează doar task-urile Todo
+    // TC-FILTER-01: Filter by status=Todo → returns only Todo tasks
     [Fact]
     public async Task GetTasks_FilterByStatus_ReturnsOnlyMatchingTasks()
     {
@@ -49,7 +49,7 @@ public class TasksFilterSortTests
         Assert.All(tasks, t => Assert.Equal(0, t["status"].GetInt32())); // 0 = Todo
     }
 
-    // TC-FILTER-02: Filter după status invalid → 400
+    // TC-FILTER-02: Filter by invalid status → 400
     [Fact]
     public async Task GetTasks_FilterByInvalidStatus_Returns400()
     {
@@ -62,7 +62,7 @@ public class TasksFilterSortTests
 
     // ─── FILTER PRIORITY ──────────────────────────────────────────────────────
 
-    // TC-FILTER-03: Filter după priority=High → returnează doar task-urile High
+    // TC-FILTER-03: Filter by priority=High → returns only High priority tasks
     [Fact]
     public async Task GetTasks_FilterByPriority_ReturnsOnlyMatchingTasks()
     {
@@ -79,7 +79,7 @@ public class TasksFilterSortTests
         Assert.All(tasks, t => Assert.Equal(2, t["priority"].GetInt32())); // 2 = High
     }
 
-    // TC-FILTER-04: Filter după priority invalid → 400
+    // TC-FILTER-04: Filter by invalid priority → 400
     [Fact]
     public async Task GetTasks_FilterByInvalidPriority_Returns400()
     {
@@ -92,7 +92,7 @@ public class TasksFilterSortTests
 
     // ─── SORT ─────────────────────────────────────────────────────────────────
 
-    // TC-FILTER-05: Sortare după priority desc → 200
+    // TC-FILTER-05: Sort by priority desc → 200
     [Fact]
     public async Task GetTasks_SortByPriorityDesc_Returns200()
     {
@@ -106,7 +106,7 @@ public class TasksFilterSortTests
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
-    // TC-FILTER-06: Sortare după deadline asc → 200
+    // TC-FILTER-06: Sort by deadline asc → 200
     [Fact]
     public async Task GetTasks_SortByDeadlineAsc_Returns200()
     {
@@ -120,7 +120,7 @@ public class TasksFilterSortTests
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
-    // TC-FILTER-07: sortBy invalid → 400
+    // TC-FILTER-07: Invalid sortBy → 400
     [Fact]
     public async Task GetTasks_InvalidSortBy_Returns400()
     {
@@ -131,7 +131,7 @@ public class TasksFilterSortTests
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
     }
 
-    // TC-FILTER-08: order fără sortBy → 400
+    // TC-FILTER-08: order without sortBy → 400
     [Fact]
     public async Task GetTasks_OrderWithoutSortBy_Returns400()
     {
@@ -142,7 +142,7 @@ public class TasksFilterSortTests
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
     }
 
-    // TC-FILTER-09: order invalid → 400
+    // TC-FILTER-09: Invalid order → 400
     [Fact]
     public async Task GetTasks_InvalidOrder_Returns400()
     {

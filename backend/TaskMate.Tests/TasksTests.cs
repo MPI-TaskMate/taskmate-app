@@ -5,8 +5,8 @@ using TaskMate.Tests.Helpers;
 namespace TaskMate.Tests;
 
 /// <summary>
-/// TC-TASK: Teste de integrare pentru gestionarea task-urilor (#62, #63)
-/// Acoperă: creare, citire, editare, ștergere, schimbare status (Kanban)
+/// TC-TASK: Integration tests for task management (#62, #63)
+/// Covers: create, read, update, delete, status change (Kanban)
 /// </summary>
 public class TasksTests
 {
@@ -29,7 +29,7 @@ public class TasksTests
 
     // ─── CREATE ───────────────────────────────────────────────────────────────
 
-    // TC-TASK-01: Creare task cu date valide → 201
+    // TC-TASK-01: Create task with valid data → 201
     [Fact]
     public async Task CreateTask_WithValidData_Returns201()
     {
@@ -65,7 +65,7 @@ public class TasksTests
         Assert.Equal(45, createdTask["estimatedMinutes"].GetInt32());
     }
 
-    // TC-TASK-02: Creare task fără titlu → 400
+    // TC-TASK-02: Create task without title → 400
     [Fact]
     public async Task CreateTask_WithoutTitle_Returns400()
     {
@@ -80,7 +80,7 @@ public class TasksTests
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
     }
 
-    // TC-TASK-03: Creare task fără autentificare → 401
+    // TC-TASK-03: Create task without authentication → 401
     [Fact]
     public async Task CreateTask_WithoutAuth_Returns401()
     {
@@ -97,7 +97,7 @@ public class TasksTests
 
     // ─── READ ─────────────────────────────────────────────────────────────────
 
-    // TC-TASK-04: Listare task-uri autentificat → 200
+    // TC-TASK-04: List tasks authenticated → 200
     [Fact]
     public async Task GetAllTasks_Authenticated_Returns200()
     {
@@ -108,7 +108,7 @@ public class TasksTests
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
-    // TC-TASK-05: Un user nu vede task-urile altui user
+    // TC-TASK-05: A user does not see another user's tasks
     [Fact]
     public async Task GetAllTasks_DoesNotReturnOtherUsersTasks()
     {
@@ -127,7 +127,7 @@ public class TasksTests
 
     // ─── UPDATE ───────────────────────────────────────────────────────────────
 
-    // TC-TASK-06: Editare task cu date valide → 200
+    // TC-TASK-06: Update task with valid data → 200
     [Fact]
     public async Task UpdateTask_WithValidData_Returns200()
     {
@@ -172,7 +172,7 @@ public class TasksTests
         Assert.Equal(120, updatedTask["estimatedMinutes"].GetInt32());
     }
 
-    // TC-TASK-07: Editare task inexistent → 404
+    // TC-TASK-07: Update non-existing task → 404
     [Fact]
     public async Task UpdateTask_NonExisting_Returns404()
     {
@@ -190,7 +190,7 @@ public class TasksTests
 
     // ─── DELETE ───────────────────────────────────────────────────────────────
 
-    // TC-TASK-08: Ștergere task existent → 204
+    // TC-TASK-08: Delete existing task → 204
     [Fact]
     public async Task DeleteTask_Existing_Returns204()
     {
@@ -205,7 +205,7 @@ public class TasksTests
         Assert.Equal(HttpStatusCode.NoContent, deleteResponse.StatusCode);
     }
 
-    // TC-TASK-09: Ștergere task inexistent → 404
+    // TC-TASK-09: Delete non-existing task → 404
     [Fact]
     public async Task DeleteTask_NonExisting_Returns404()
     {
@@ -218,7 +218,7 @@ public class TasksTests
 
     // ─── PATCH STATUS (Kanban) ────────────────────────────────────────────────
 
-    // TC-TASK-10: Schimbare status → InProgress (Kanban) → 200
+    // TC-TASK-10: Change status → InProgress (Kanban) → 200
     [Fact]
     public async Task PatchTask_StatusToInProgress_Returns200()
     {
@@ -233,7 +233,7 @@ public class TasksTests
         Assert.Equal(HttpStatusCode.OK, patchResponse.StatusCode);
     }
 
-    // TC-TASK-11: Schimbare status → Done (Kanban) → 200
+    // TC-TASK-11: Change status → Done (Kanban) → 200
     [Fact]
     public async Task PatchTask_StatusToDone_Returns200()
     {
