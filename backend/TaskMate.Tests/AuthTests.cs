@@ -4,12 +4,12 @@ using TaskMate.Tests.Helpers;
 namespace TaskMate.Tests;
 
 /// <summary>
-/// TC-AUTH: Teste de integrare pentru autentificare (#61)
-/// Acoperă: register, login, validări de input
+/// TC-AUTH: Integration tests for authentication (#61)
+/// Covers: register, login, input validation
 /// </summary>
 public class AuthTests
 {
-    // TC-AUTH-01: Register cu date valide → 201 + token JWT
+    // TC-AUTH-01: Register with valid data → 201 + JWT token
     [Fact]
     public async Task Register_WithValidCredentials_Returns201AndToken()
     {
@@ -30,7 +30,7 @@ public class AuthTests
         Assert.False(string.IsNullOrEmpty(body["token"]));
     }
 
-    // TC-AUTH-02: Register cu email duplicat → 400
+    // TC-AUTH-02: Register with duplicate email → 400
     [Fact]
     public async Task Register_WithDuplicateEmail_Returns400()
     {
@@ -43,7 +43,7 @@ public class AuthTests
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
     }
 
-    // TC-AUTH-03: Register cu parolă mai scurtă de 8 caractere → 400
+    // TC-AUTH-03: Register with password shorter than 8 characters → 400
     [Fact]
     public async Task Register_WithShortPassword_Returns400()
     {
@@ -58,7 +58,7 @@ public class AuthTests
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
     }
 
-    // TC-AUTH-04: Register cu format invalid de email → 400
+    // TC-AUTH-04: Register with invalid email format → 400
     [Fact]
     public async Task Register_WithInvalidEmailFormat_Returns400()
     {
@@ -73,7 +73,7 @@ public class AuthTests
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
     }
 
-    // TC-AUTH-05: Login cu credențiale valide → 200 + token JWT
+    // TC-AUTH-05: Login with valid credentials → 200 + JWT token
     [Fact]
     public async Task Login_WithValidCredentials_Returns200AndToken()
     {
@@ -92,7 +92,7 @@ public class AuthTests
         Assert.False(string.IsNullOrEmpty(body["token"]));
     }
 
-    // TC-AUTH-06: Login cu parolă greșită → 401
+    // TC-AUTH-06: Login with wrong password → 401
     [Fact]
     public async Task Login_WithWrongPassword_Returns401()
     {
@@ -105,7 +105,7 @@ public class AuthTests
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
     }
 
-    // TC-AUTH-07: Login cu email inexistent → 401
+    // TC-AUTH-07: Login with non-existent email → 401
     [Fact]
     public async Task Login_WithNonExistentEmail_Returns401()
     {

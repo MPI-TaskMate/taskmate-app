@@ -5,8 +5,8 @@ using TaskMate.Tests.Helpers;
 namespace TaskMate.Tests;
 
 /// <summary>
-/// TC-OVERDUE: Teste de integrare pentru deadline highlighting (#65)
-/// Acoperă: isOverdue, isDueToday pe task-uri returnate de GET /api/tasks
+/// TC-OVERDUE: Integration tests for deadline highlighting (#65)
+/// Covers: isOverdue, isDueToday on tasks returned by GET /api/tasks
 /// </summary>
 public class TasksOverdueTests
 {
@@ -34,7 +34,7 @@ public class TasksOverdueTests
         return tasks?.FirstOrDefault(t => t["id"].GetString() == taskId);
     }
 
-    // TC-OVERDUE-01: Task cu deadline în trecut → isOverdue = true
+    // TC-OVERDUE-01: Task with past deadline → isOverdue = true
     [Fact]
     public async Task GetTasks_TaskWithPastDeadline_IsOverdueTrue()
     {
@@ -56,7 +56,7 @@ public class TasksOverdueTests
         Assert.False(task["isDueToday"].GetBoolean());
     }
 
-    // TC-OVERDUE-02: Task cu deadline azi → isDueToday = true
+    // TC-OVERDUE-02: Task with today's deadline → isDueToday = true
     [Fact]
     public async Task GetTasks_TaskWithTodayDeadline_IsDueTodayTrue()
     {
@@ -78,7 +78,7 @@ public class TasksOverdueTests
         Assert.False(task["isOverdue"].GetBoolean());
     }
 
-    // TC-OVERDUE-03: Task cu deadline în viitor → isOverdue = false, isDueToday = false
+    // TC-OVERDUE-03: Task with future deadline → isOverdue = false, isDueToday = false
     [Fact]
     public async Task GetTasks_TaskWithFutureDeadline_BothFalse()
     {
@@ -100,7 +100,7 @@ public class TasksOverdueTests
         Assert.False(task["isDueToday"].GetBoolean());
     }
 
-    // TC-OVERDUE-04: Task fără deadline → isOverdue = false, isDueToday = false
+    // TC-OVERDUE-04: Task without deadline → isOverdue = false, isDueToday = false
     [Fact]
     public async Task GetTasks_TaskWithoutDeadline_BothFalse()
     {
@@ -120,7 +120,7 @@ public class TasksOverdueTests
         Assert.False(task["isDueToday"].GetBoolean());
     }
 
-    // TC-OVERDUE-05: Task Done cu deadline în trecut → isOverdue = false
+    // TC-OVERDUE-05: Done task with past deadline → isOverdue = false
     [Fact]
     public async Task GetTasks_DoneTaskWithPastDeadline_IsOverdueFalse()
     {
