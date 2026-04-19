@@ -42,7 +42,7 @@ export default function Sidebar({
         </NavLink>
 
         <NavLink
-          to="/"
+          to="/calendar"
           className={({ isActive }) =>
             `${styles.navItem} ${isActive ? styles.navItemActive : ""}`
           }
