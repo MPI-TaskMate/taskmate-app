@@ -1,10 +1,17 @@
 import { useEffect, useState } from "react";
 import { TaskContext } from "./TaskContextDefinition";
+
 import {
   getTasks,
   createTask,
+  updateTaskStatus,
+  updateTaskPin,
+  updateTask,
+  deleteTask,
   type TaskItem,
   type CreateTaskRequest,
+  type TaskStatus,
+  type UpdateTaskRequest,
 } from "../services/tasksService";
 
 export function TaskProvider({ children }: { children: React.ReactNode }) {
@@ -30,6 +37,37 @@ export function TaskProvider({ children }: { children: React.ReactNode }) {
     setTasks((prev) => [newTask, ...prev]);
   }
 
+  async function changeTaskStatus(id: string, status: TaskStatus) {
+    setTasks((prev) => prev.map((t) => (t.id === id ? { ...t, status } : t)));
+
+    try {
+      await updateTaskStatus(id, status);
+    } catch {
+      refreshTasks();
+    }
+  }
+
+  async function togglePin(id: string, isPinned: boolean) {
+    setTasks((prev) => prev.map((t) => (t.id === id ? { ...t, isPinned } : t)));
+
+    try {
+      await updateTaskPin(id, isPinned);
+    } catch {
+      refreshTasks();
+    }
+  }
+
+  async function editTask(id: string, values: UpdateTaskRequest) {
+    const updated = await updateTask(id, values);
+
+    setTasks((prev) => prev.map((t) => (t.id === id ? updated : t)));
+  }
+
+  async function removeTask(id: string) {
+    await deleteTask(id);
+    setTasks((prev) => prev.filter((t) => t.id !== id));
+  }
+
   useEffect(() => {
     refreshTasks();
   }, []);
@@ -42,6 +80,10 @@ export function TaskProvider({ children }: { children: React.ReactNode }) {
         error,
         refreshTasks,
         addTask,
+        changeTaskStatus,
+        togglePin,
+        editTask,
+        removeTask,
       }}
     >
       {children}
