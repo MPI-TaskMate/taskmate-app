@@ -23,7 +23,6 @@ import {
   type Subject,
 } from "../services/subjectsService";
 import styles from "../styles/tasks.module.css";
-import TaskCalendar from "../components/TaskCalendar";
 import Sidebar from "../components/Sidebar";
 
 type ViewMode = "list" | "kanban";
@@ -304,144 +303,162 @@ export default function TasksPage() {
     );
   }
 
-  return (
-    <main className={styles.page}>
-      <div className={styles.layout}>
-        <Sidebar
-          subjects={subjects}
-          onAdd={handleAddSubject}
-          onDelete={handleDeleteSubject}
-          subjectError={subjectError}
-        />
-        <div className={styles.content}>
-          <div className="container">
-            <div className={styles.header}>
-              {actionError && (
-                <div className={styles.errorBanner}>{actionError}</div>
-              )}
-              <div>
-                <h1>Tasks</h1>
-                <p>Manage your tasks efficiently.</p>
-              </div>
+ return (
+  <main className={styles.page}>
+    <div className={styles.layout}>
+      <Sidebar
+        subjects={subjects}
+        onAdd={handleAddSubject}
+        onDelete={handleDeleteSubject}
+        subjectError={subjectError}
+      />
 
-              <ViewToggle viewMode={viewMode} onChange={setViewMode} />
+      <div className={styles.content}>
+        <div className="container">
+          <div className={styles.header}>
+            {actionError && (
+              <div className={styles.errorBanner}>{actionError}</div>
+            )}
+
+            <div>
+              <h1>Tasks</h1>
+              <p>Manage your tasks efficiently.</p>
             </div>
 
-            <div className={styles.actionsRow}>
-              <button
-                onClick={handleOpenCreateForm}
-                className={styles.addTaskButton}
-              >
-                + Create Task
-              </button>
+            <ViewToggle viewMode={viewMode} onChange={setViewMode} />
+          </div>
 
-              <div className={styles.searchContainer}>
-                <div className={styles.searchWrapper}>
-                  <img
-                    src="/assets/icons/search-icon.svg"
-                    className={styles.iconDefault}
-                  />
-                  <img
-                    src="/assets/icons/search-icon-hover.svg"
-                    className={styles.iconHover}
-                  />
-                  <input
-                    type="text"
-                    placeholder="Search tasks..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className={styles.searchInput}
-                  />
-                </div>
+          <div className={styles.actionsRow}>
+            <button
+              onClick={handleOpenCreateForm}
+              className={styles.addTaskButton}
+            >
+              + Create Task
+            </button>
 
-                <div className={styles.focusWrapper}>
-                  <div className={styles.focusButtons}>
-                    {!focusMode ? (
-                      <button onClick={() => setFocusMode(true)}>
-                        Focus Mode
-                      </button>
-                    ) : (
-                      <button onClick={() => setFocusMode(false)}>
-                        Show all
-                      </button>
-                    )}
-                  </div>
+            <div className={styles.searchContainer}>
+              <div className={styles.searchWrapper}>
+                <img
+                  src="/assets/icons/search-icon.svg"
+                  className={styles.iconDefault}
+                />
+                <img
+                  src="/assets/icons/search-icon-hover.svg"
+                  className={styles.iconHover}
+                />
+                <input
+                  type="text"
+                  placeholder="Search tasks..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className={styles.searchInput}
+                />
+              </div>
 
-                  {focusMode && (
-                    <p className={styles.focusIndicator}>
-                      Showing today's tasks
-                    </p>
+              <div className={styles.focusWrapper}>
+                <div className={styles.focusButtons}>
+                  {!focusMode ? (
+                    <button onClick={() => setFocusMode(true)}>
+                      Focus Mode
+                    </button>
+                  ) : (
+                    <button onClick={() => setFocusMode(false)}>
+                      Show all
+                    </button>
                   )}
                 </div>
+
+                {focusMode && (
+                  <p className={styles.focusIndicator}>
+                    Showing today's tasks
+                  </p>
+                )}
               </div>
             </div>
-
-            {filteredTasks.length === 0 ? (
-              <div className={styles.emptyState}>
-                <h3>No tasks yet</h3>
-                <p>Start by adding your first task.</p>
-              </div>
-            ) : viewMode === "kanban" ? (
-              <DndContext
-                collisionDetection={closestCenter}
-                onDragEnd={handleDragEnd}
-              >
-                <section className={styles.kanbanBoard}>
-                  <KanbanColumn
-                    title="Todo"
-                    status={TASK_STATUS.Todo}
-                    tasks={todoTasks}
-                    subjects={subjects}
-                    onPinToggle={handlePinToggle}
-                    onEdit={handleOpenEditForm}
-                    onDelete={handleDeleteTask}
-                  />
-                  <KanbanColumn
-                    title="In Progress"
-                    status={TASK_STATUS.InProgress}
-                    tasks={inProgressTasks}
-                    subjects={subjects}
-                    onPinToggle={handlePinToggle}
-                    onEdit={handleOpenEditForm}
-                    onDelete={handleDeleteTask}
-                  />
-                  <KanbanColumn
-                    title="Done"
-                    status={TASK_STATUS.Done}
-                    tasks={doneTasks}
-                    subjects={subjects}
-                    onPinToggle={handlePinToggle}
-                    onEdit={handleOpenEditForm}
-                    onDelete={handleDeleteTask}
-                  />
-                </section>
-              </DndContext>
-            ) : (
-              <section className={styles.listView}>
-                <div className={styles.listHeader}>
-                  <span>Task</span>
-                  <span>Subject</span>
-                  <span>Priority</span>
-                  <span>Deadline</span>
-                  <span>Status</span>
-                  <span></span>
-                </div>
-
-                {filteredTasks.map((task) => (
-                  <TaskListItem
-                    key={task.id}
-                    task={task}
-                    subjects={subjects}
-                    onPinToggle={handlePinToggle}
-                    onEdit={handleOpenEditForm}
-                    onDelete={handleDeleteTask}
-                  />
-                ))}
-              </section>
-            )}
           </div>
+
+          {filteredTasks.length === 0 ? (
+            <div className={styles.emptyState}>
+              <h3>No tasks yet</h3>
+              <p>Start by adding your first task.</p>
+            </div>
+          ) : viewMode === "kanban" ? (
+            <DndContext
+              collisionDetection={closestCenter}
+              onDragEnd={handleDragEnd}
+            >
+              <section className={styles.kanbanBoard}>
+                <KanbanColumn
+                  title="Todo"
+                  status={TASK_STATUS.Todo}
+                  tasks={todoTasks}
+                  subjects={subjects}
+                  onPinToggle={handlePinToggle}
+                  onEdit={handleOpenEditForm}
+                  onDelete={handleDeleteTask}
+                />
+                <KanbanColumn
+                  title="In Progress"
+                  status={TASK_STATUS.InProgress}
+                  tasks={inProgressTasks}
+                  subjects={subjects}
+                  onPinToggle={handlePinToggle}
+                  onEdit={handleOpenEditForm}
+                  onDelete={handleDeleteTask}
+                />
+                <KanbanColumn
+                  title="Done"
+                  status={TASK_STATUS.Done}
+                  tasks={doneTasks}
+                  subjects={subjects}
+                  onPinToggle={handlePinToggle}
+                  onEdit={handleOpenEditForm}
+                  onDelete={handleDeleteTask}
+                />
+              </section>
+            </DndContext>
+          ) : (
+            <section className={styles.listView}>
+              <div className={styles.listHeader}>
+                <span>Task</span>
+                <span>Subject</span>
+                <span>Priority</span>
+                <span>Deadline</span>
+                <span>Status</span>
+                <span></span>
+              </div>
+
+              {filteredTasks.map((task) => (
+                <TaskListItem
+                  key={task.id}
+                  task={task}
+                  subjects={subjects}
+                  onPinToggle={handlePinToggle}
+                  onEdit={handleOpenEditForm}
+                  onDelete={handleDeleteTask}
+                />
+              ))}
+            </section>
+          )}
         </div>
       </div>
-    </main>
-  );
-}
+    </div>
+
+{isTaskFormOpen && (
+  <TaskForm
+  initialTask={editingTask}
+  subjects={subjects}
+  onSubmit={handleTaskSubmit}
+  onCancel={handleCloseTaskForm}
+/>
+)}
+
+{taskToDelete && (
+  <DeleteTaskModal
+  taskTitle={taskToDelete.title}
+  onConfirm={handleConfirmDelete}
+  onCancel={handleCloseDeleteModal}
+/>
+)}
+  </main>
+);}
