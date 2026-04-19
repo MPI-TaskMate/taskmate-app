@@ -1,5 +1,5 @@
 import { Routes, Route, Navigate } from "react-router-dom";
-import DashboardPage from "../pages/DashboardPage";
+import TasksPage from "../pages/TasksPage";
 import RegisterPage from "../pages/RegisterPage";
 import LoginPage from "../pages/LoginPage";
 import ProtectedRoute from "./ProtectedRoute";
@@ -28,10 +28,10 @@ export default function AppRoutes() {
       />
 
       <Route
-        path="/dashboard"
+        path="/tasks"
         element={
           <ProtectedRoute>
-            <DashboardPage />
+            <TasksPage />
           </ProtectedRoute>
         }
       />

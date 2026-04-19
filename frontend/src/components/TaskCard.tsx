@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useDraggable } from "@dnd-kit/core";
-import styles from "../styles/dashboard.module.css";
+import styles from "../styles/tasks.module.css";
 import { type Subject } from "../services/subjectsService";
 import {
   type TaskItem,

@@ -19,6 +19,39 @@
   margin-bottom: 16px;
 }
 
+.navSection {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+
+.divider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.2);
+  margin: 10px 0 14px;
+}
+
+.navItem {
+  padding: 6px 8px;
+  border-radius: 8px;
+  color: var(--neutral-50);
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.navItem:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.navItemActive {
+  background: rgba(255, 255, 255, 0.12);
+  color: white;
+  font-weight: 600;
+  border-radius: 8px;
+}
+
 .subjectList {
   display: flex;
   flex-direction: column;

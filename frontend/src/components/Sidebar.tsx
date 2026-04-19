@@ -1,5 +1,6 @@
 import { useState } from "react";
 import type { Subject } from "../services/subjectsService";
+import { NavLink } from "react-router-dom";
 import styles from "../styles/sidebar.module.css";
 
 type Props = {
@@ -27,6 +28,31 @@ export default function Sidebar({
 
   return (
     <aside className={styles.sidebar}>
+      <h3 className={styles.sidebarTitle}>Navigation</h3>
+
+      <div className={styles.navSection}>
+        <NavLink
+          to="/tasks"
+          end
+          className={({ isActive }) =>
+            `${styles.navItem} ${isActive ? styles.navItemActive : ""}`
+          }
+        >
+          Tasks
+        </NavLink>
+
+        <NavLink
+          to="/"
+          className={({ isActive }) =>
+            `${styles.navItem} ${isActive ? styles.navItemActive : ""}`
+          }
+        >
+          Calendar
+        </NavLink>
+      </div>
+
+      <div className={styles.divider} />
+
       <h3 className={styles.sidebarTitle}>Subjects</h3>
       <div className={styles.subjectList}>
         <div className={styles.subjectRow}>All</div>

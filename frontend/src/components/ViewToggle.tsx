@@ -1,26 +1,29 @@
-import styles from "../styles/dashboard.module.css";
+import styles from "../styles/tasks.module.css";
+import type { CSSProperties } from "react";
 
-type ViewMode = "list" | "kanban" | "calendar";
+type ViewMode = "list" | "kanban";
 
 type ViewToggleProps = {
   viewMode: ViewMode;
   onChange: (mode: ViewMode) => void;
 };
 
+type CSSVars = CSSProperties & {
+  ["--bg-pos"]?: string;
+};
+
 export default function ViewToggle({ viewMode, onChange }: ViewToggleProps) {
+  const bgPos = viewMode === "list" ? "0%" : "100%";
+
+  const style: CSSVars = {
+    transform:
+      viewMode === "list" ? "translateX(0%)" : "translateX(100%)",
+    "--bg-pos": bgPos,
+  };
+
   return (
     <div className={styles.viewToggle}>
-      <div
-        className={styles.toggleIndicator}
-        style={{
-          transform:
-            viewMode === "list"
-              ? "translateX(0%)"
-              : viewMode === "kanban"
-                ? "translateX(100%)"
-                : "translateX(200%)",
-        }}
-      />
+      <div className={styles.toggleIndicator} style={style} />
 
       <button
         className={`${styles.toggleButton} ${
@@ -38,15 +41,6 @@ export default function ViewToggle({ viewMode, onChange }: ViewToggleProps) {
         onClick={() => onChange("kanban")}
       >
         Kanban
-      </button>
-
-      <button
-        className={`${styles.toggleButton} ${
-          viewMode === "calendar" ? styles.activeToggle : ""
-        }`}
-        onClick={() => onChange("calendar")}
-      >
-        Calendar
       </button>
     </div>
   );

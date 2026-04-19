@@ -46,29 +46,49 @@
 
 .viewToggle {
   position: relative;
-  display: inline-flex;
-  background: var(--neutral-50);
-  border: 1px solid var(--neutral-200);
+  display: flex;
+  padding: 5px;
   border-radius: 999px;
-  padding: 0.25rem;
+  min-width: 260px;
+  background: white;
   overflow: hidden;
 }
 
 .toggleIndicator {
   position: absolute;
-  top: 4px;
-  left: 4px;
-  width: calc(33.33% - 4px); /* important pt 3 butoane */
-  height: calc(100% - 8px);
+  top: 5px;
+  left: 5px;
+  width: calc(50% - 5px);
+  height: calc(100% - 10px);
   border-radius: 999px;
   background: linear-gradient(
-    135deg,
-    var(--color-secondary),
+    120deg,
     var(--color-primary),
-    var(--color-accent)
+    var(--color-secondary)
   );
-  transition: transform 0.35s ease;
-  pointer-events: none;
+  background-size: 200% 100%;
+  background-position: var(--bg-pos, 0%) 50%;
+  transition:
+    transform 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+    background-position 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.toggleButton {
+  flex: 1;
+  position: relative;
+  z-index: 1;
+  border: none;
+  background: transparent;
+  padding: 0.8rem 0;
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: #64748b;
+  cursor: pointer;
+  transition: color 0.25s ease;
+}
+
+.activeToggle {
+  color: white;
 }
 
 .left {
@@ -79,25 +99,6 @@
 .right {
   transform: translateX(100%);
   background-position: 100% 50%;
-}
-
-.toggleButton {
-  position: relative;
-  z-index: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 120px;
-  text-align: center;
-  border: none;
-  background: transparent;
-  padding: 0.7rem 0;
-  border-radius: 999px;
-  font-family: var(--font-body);
-  font-weight: 600;
-  color: var(--neutral-600);
-  cursor: pointer;
-  transition: color 0.25s ease;
 }
 
 .activeToggle {
