@@ -6,27 +6,31 @@ import TaskListItem from "../components/TaskListItem";
 import DeleteTaskModal from "../components/DeleteTaskModal";
 import TaskForm from "../components/TaskForm";
 import {
-  updateTaskStatus,
-  updateTaskPin,
-  updateTask,
-  deleteTask,
   type TaskItem,
   TASK_STATUS,
   type CreateTaskRequest,
 } from "../services/tasksService";
 import { useSubjects } from "../hooks/useSubjects";
-import { useTasks } from "../hooks/useTasks"; 
+import { useTasks } from "../hooks/useTasks";
 import styles from "../styles/tasks.module.css";
 
 type ViewMode = "list" | "kanban";
 
 export default function TasksPage() {
   const { subjects } = useSubjects();
-  const { tasks, loading, error, addTask } = useTasks(); 
+
+  const {
+    tasks,
+    loading,
+    error,
+    addTask,
+    changeTaskStatus,
+    togglePin,
+    editTask,
+    removeTask,
+  } = useTasks();
 
   const [viewMode, setViewMode] = useState<ViewMode>("kanban");
-
-  const [localTasks, setLocalTasks] = useState<TaskItem[]>([]);
 
   const [actionError, setActionError] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
@@ -35,10 +39,6 @@ export default function TasksPage() {
   const [isTaskFormOpen, setIsTaskFormOpen] = useState(false);
   const [editingTask, setEditingTask] = useState<TaskItem | null>(null);
   const [taskToDelete, setTaskToDelete] = useState<TaskItem | null>(null);
-
-  useEffect(() => {
-    setLocalTasks(tasks);
-  }, [tasks]);
 
   function handleOpenCreateForm() {
     setEditingTask(null);
@@ -65,7 +65,7 @@ export default function TasksPage() {
 
   async function handleTaskSubmit(values: CreateTaskRequest) {
     if (editingTask) {
-      const updatedTask = await updateTask(editingTask.id, {
+      await editTask(editingTask.id, {
         ...values,
         status: editingTask.status,
         subjectId:
@@ -73,12 +73,8 @@ export default function TasksPage() {
             ? values.subjectId
             : editingTask.subjectId,
       });
-
-      setLocalTasks((prev) =>
-        prev.map((task) => (task.id === editingTask.id ? updatedTask : task)),
-      );
     } else {
-      await addTask(values); 
+      await addTask(values);
     }
 
     handleCloseTaskForm();
@@ -90,10 +86,7 @@ export default function TasksPage() {
     setActionError("");
 
     try {
-      await deleteTask(taskToDelete.id);
-      setLocalTasks((prev) =>
-        prev.filter((item) => item.id !== taskToDelete.id),
-      );
+      await removeTask(taskToDelete.id);
       setTaskToDelete(null);
     } catch (err) {
       if (err instanceof Error) {
@@ -106,29 +99,10 @@ export default function TasksPage() {
   }
 
   async function handlePinToggle(taskId: string) {
-    let oldPinnedState: boolean | undefined;
+    const task = tasks.find((t) => t.id === taskId);
+    if (!task) return;
 
-    setLocalTasks((prev) => {
-      const updated = prev.map((task) => {
-        if (task.id === taskId) {
-          oldPinnedState = task.isPinned;
-          return { ...task, isPinned: !task.isPinned };
-        }
-        return task;
-      });
-
-      return updated;
-    });
-
-    try {
-      await updateTaskPin(taskId, !oldPinnedState);
-    } catch {
-      setLocalTasks((prev) =>
-        prev.map((task) =>
-          task.id === taskId ? { ...task, isPinned: oldPinnedState } : task,
-        ),
-      );
-    }
+    await togglePin(taskId, !task.isPinned);
   }
 
   function handleDragEnd(event: DragEndEvent) {
@@ -146,17 +120,7 @@ export default function TasksPage() {
     if (!activeData) return;
     if (activeData.status === newStatus) return;
 
-    const oldStatus = activeData.status;
-
-    setLocalTasks((prev) =>
-      prev.map((t) => (t.id === taskId ? { ...t, status: newStatus } : t)),
-    );
-
-    updateTaskStatus(taskId, newStatus).catch(() => {
-      setLocalTasks((prev) =>
-        prev.map((t) => (t.id === taskId ? { ...t, status: oldStatus } : t)),
-      );
-    });
+    changeTaskStatus(taskId, newStatus);
   }
 
   function isTodayOrOverdue(deadline?: string | null) {
@@ -180,7 +144,7 @@ export default function TasksPage() {
   }, [searchTerm]);
 
   const filteredTasks = useMemo(() => {
-    let result = localTasks;
+    let result = tasks;
 
     if (debouncedSearch.trim()) {
       result = result.filter((task) =>
@@ -199,7 +163,7 @@ export default function TasksPage() {
       if (a.isPinned === b.isPinned) return 0;
       return a.isPinned ? -1 : 1;
     });
-  }, [localTasks, debouncedSearch, focusMode]);
+  }, [tasks, debouncedSearch, focusMode]);
 
   const todoTasks = useMemo(
     () => filteredTasks.filter((t) => t.status === TASK_STATUS.Todo),
