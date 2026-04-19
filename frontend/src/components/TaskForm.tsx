@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import styles from "../styles/taskForm.module.css";
+import { type Subject } from "../services/subjectsService";
 import {
   TASK_PRIORITY,
   type CreateTaskRequest,
@@ -11,12 +12,14 @@ type TaskFormValues = CreateTaskRequest;
 
 type Props = {
   initialTask?: TaskItem | null;
+  subjects: Subject[];
   onSubmit: (values: TaskFormValues) => Promise<void>;
   onCancel: () => void;
 };
 
 export default function TaskForm({
   initialTask = null,
+  subjects,
   onSubmit,
   onCancel,
 }: Props) {
@@ -26,6 +29,7 @@ export default function TaskForm({
   const [priority, setPriority] = useState<TaskPriority>(TASK_PRIORITY.Medium);
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [subjectId, setSubjectId] = useState<string | null>(null);
 
   useEffect(() => {
     if (initialTask) {
@@ -35,11 +39,13 @@ export default function TaskForm({
         initialTask.deadline ? initialTask.deadline.slice(0, 10) : "",
       );
       setPriority(initialTask.priority);
+      setSubjectId(initialTask.subjectId ?? null);
     } else {
       setTitle("");
       setDescription("");
       setDeadline("");
       setPriority(TASK_PRIORITY.Medium);
+      setSubjectId(null);
     }
   }, [initialTask]);
 
@@ -60,6 +66,7 @@ export default function TaskForm({
         description: description.trim() || "",
         deadline: deadline || null,
         priority,
+        subjectId,
       });
     } finally {
       setSubmitting(false);
@@ -84,6 +91,22 @@ export default function TaskForm({
               placeholder="Enter task title"
             />
             {error && <p className={styles.error}>{error}</p>}
+          </div>
+
+          <div className={styles.field}>
+            <label htmlFor="task-subject">Subject</label>
+            <select
+              id="task-subject"
+              value={subjectId ?? ""}
+              onChange={(e) => setSubjectId(e.target.value || null)}
+            >
+              <option value="">No subject</option>
+              {subjects.map((subject) => (
+                <option key={subject.id} value={subject.id}>
+                  {subject.name}
+                </option>
+              ))}
+            </select>
           </div>
 
           <div className={styles.field}>

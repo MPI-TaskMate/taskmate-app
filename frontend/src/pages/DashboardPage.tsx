@@ -71,7 +71,10 @@ export default function DashboardPage() {
       const updatedTask = await updateTask(editingTask.id, {
         ...values,
         status: editingTask.status,
-        subjectId: values.subjectId ?? editingTask.subjectId,
+        subjectId:
+          values.subjectId !== undefined
+            ? values.subjectId
+            : editingTask.subjectId,
       });
 
       setTasks((prev) =>
@@ -388,6 +391,7 @@ export default function DashboardPage() {
                     title="Todo"
                     status={TASK_STATUS.Todo}
                     tasks={todoTasks}
+                    subjects={subjects}
                     onPinToggle={handlePinToggle}
                     onEdit={handleOpenEditForm}
                     onDelete={handleDeleteTask}
@@ -396,6 +400,7 @@ export default function DashboardPage() {
                     title="In Progress"
                     status={TASK_STATUS.InProgress}
                     tasks={inProgressTasks}
+                    subjects={subjects}
                     onPinToggle={handlePinToggle}
                     onEdit={handleOpenEditForm}
                     onDelete={handleDeleteTask}
@@ -404,6 +409,7 @@ export default function DashboardPage() {
                     title="Done"
                     status={TASK_STATUS.Done}
                     tasks={doneTasks}
+                    subjects={subjects}
                     onPinToggle={handlePinToggle}
                     onEdit={handleOpenEditForm}
                     onDelete={handleDeleteTask}
@@ -414,6 +420,7 @@ export default function DashboardPage() {
               <section className={styles.listView}>
                 <div className={styles.listHeader}>
                   <span>Task</span>
+                  <span>Subject</span>
                   <span>Priority</span>
                   <span>Deadline</span>
                   <span>Status</span>
@@ -424,6 +431,7 @@ export default function DashboardPage() {
                   <TaskListItem
                     key={task.id}
                     task={task}
+                    subjects={subjects}
                     onPinToggle={handlePinToggle}
                     onEdit={handleOpenEditForm}
                     onDelete={handleDeleteTask}
@@ -437,6 +445,7 @@ export default function DashboardPage() {
             {isTaskFormOpen && (
               <TaskForm
                 initialTask={editingTask}
+                subjects={subjects}
                 onSubmit={handleTaskSubmit}
                 onCancel={handleCloseTaskForm}
               />

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import styles from "../styles/dashboard.module.css";
+import { type Subject } from "../services/subjectsService";
 import {
   type TaskItem,
   type TaskPriority,
@@ -10,6 +11,7 @@ import { getDeadlineStatus, formatDate } from "../utils/dateUtils";
 
 type Props = {
   task: TaskItem;
+  subjects: Subject[];
   onPinToggle: (id: string) => void;
   onEdit: (task: TaskItem) => void;
   onDelete: (task: TaskItem) => void;
@@ -17,6 +19,7 @@ type Props = {
 
 export default function TaskListItem({
   task,
+  subjects,
   onPinToggle,
   onEdit,
   onDelete,
@@ -28,12 +31,27 @@ export default function TaskListItem({
       ? getDeadlineStatus(task.deadline)
       : "none";
 
+  const subject = subjects.find((s) => s.id === task.subjectId);
+
   return (
     <div className={styles.listRow}>
       <div className={styles.colTitle}>
         <p className={styles.taskTitle}>{task.title}</p>
         {task.description && (
           <span className={styles.taskDescription}>{task.description}</span>
+        )}
+      </div>
+
+      <div className={styles.colSubject}>
+        {subject ? (
+          <span
+            className={styles.subjectLabel}
+            style={{ "--subject-color": subject.color } as React.CSSProperties}
+          >
+            {subject.name}
+          </span>
+        ) : (
+          "-"
         )}
       </div>
 

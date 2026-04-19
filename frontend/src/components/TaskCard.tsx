@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useDraggable } from "@dnd-kit/core";
 import styles from "../styles/dashboard.module.css";
+import { type Subject } from "../services/subjectsService";
 import {
   type TaskItem,
   type TaskPriority,
@@ -11,6 +12,7 @@ import { getDeadlineStatus, formatDate } from "../utils/dateUtils";
 type TaskCardProps = {
   task: TaskItem;
   showStatus?: boolean;
+  subjects: Subject[];
   onPinToggle?: (taskId: string) => void;
   onEdit?: (task: TaskItem) => void;
   onDelete?: (task: TaskItem) => void;
@@ -19,6 +21,7 @@ type TaskCardProps = {
 export default function TaskCard({
   task,
   showStatus = false,
+  subjects,
   onPinToggle,
   onEdit,
   onDelete,
@@ -34,6 +37,8 @@ export default function TaskCard({
     id: task.id,
     data: { status: task.status },
   });
+
+  const subject = subjects.find((s) => s.id === task.subjectId);
 
   return (
     <article
@@ -54,6 +59,16 @@ export default function TaskCard({
           >
             {getPriorityLabel(task.priority)}
           </span>
+          {subject && (
+            <span
+              className={styles.subjectLabel}
+              style={
+                { "--subject-color": subject.color } as React.CSSProperties
+              }
+            >
+              {subject.name}
+            </span>
+          )}
         </div>
 
         <div
