@@ -22,13 +22,13 @@ import {
   deleteSubject,
   type Subject,
 } from "../services/subjectsService";
-import styles from "../styles/dashboard.module.css";
+import styles from "../styles/tasks.module.css";
 import TaskCalendar from "../components/TaskCalendar";
 import Sidebar from "../components/Sidebar";
 
-type ViewMode = "list" | "kanban" | "calendar";
+type ViewMode = "list" | "kanban";
 
-export default function DashboardPage() {
+export default function TasksPage() {
   const [viewMode, setViewMode] = useState<ViewMode>("kanban");
   const [tasks, setTasks] = useState<TaskItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -320,8 +320,8 @@ export default function DashboardPage() {
                 <div className={styles.errorBanner}>{actionError}</div>
               )}
               <div>
-                <h1>Dashboard</h1>
-                <p>Stay organized and get things done.</p>
+                <h1>Tasks</h1>
+                <p>Manage your tasks efficiently.</p>
               </div>
 
               <ViewToggle viewMode={viewMode} onChange={setViewMode} />
@@ -416,7 +416,7 @@ export default function DashboardPage() {
                   />
                 </section>
               </DndContext>
-            ) : viewMode === "list" ? (
+            ) : (
               <section className={styles.listView}>
                 <div className={styles.listHeader}>
                   <span>Task</span>
@@ -438,25 +438,6 @@ export default function DashboardPage() {
                   />
                 ))}
               </section>
-            ) : (
-              <TaskCalendar tasks={filteredTasks} />
-            )}
-
-            {isTaskFormOpen && (
-              <TaskForm
-                initialTask={editingTask}
-                subjects={subjects}
-                onSubmit={handleTaskSubmit}
-                onCancel={handleCloseTaskForm}
-              />
-            )}
-
-            {taskToDelete && (
-              <DeleteTaskModal
-                taskTitle={taskToDelete.title}
-                onConfirm={handleConfirmDelete}
-                onCancel={handleCloseDeleteModal}
-              />
             )}
           </div>
         </div>

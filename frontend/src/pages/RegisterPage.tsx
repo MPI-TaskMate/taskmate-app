@@ -86,7 +86,7 @@ export default function RegisterPage() {
       });
 
       await login(form.email, form.password);
-      navigate("/dashboard");
+      navigate("/tasks");
     } catch (err: unknown) {
       if (err instanceof Error) {
         setErrors({ general: err.message });

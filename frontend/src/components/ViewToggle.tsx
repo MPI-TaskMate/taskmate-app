@@ -1,6 +1,6 @@
-import styles from "../styles/dashboard.module.css";
+import styles from "../styles/tasks.module.css";
 
-type ViewMode = "list" | "kanban" | "calendar";
+type ViewMode = "list" | "kanban";
 
 type ViewToggleProps = {
   viewMode: ViewMode;
@@ -14,11 +14,8 @@ export default function ViewToggle({ viewMode, onChange }: ViewToggleProps) {
         className={styles.toggleIndicator}
         style={{
           transform:
-            viewMode === "list"
-              ? "translateX(0%)"
-              : viewMode === "kanban"
-                ? "translateX(100%)"
-                : "translateX(200%)",
+            viewMode === "list" ? "translateX(0%)" : "translateX(100%)",
+          ["--bg-pos" as any]: viewMode === "list" ? "0%" : "100%",
         }}
       />
 
@@ -38,15 +35,6 @@ export default function ViewToggle({ viewMode, onChange }: ViewToggleProps) {
         onClick={() => onChange("kanban")}
       >
         Kanban
-      </button>
-
-      <button
-        className={`${styles.toggleButton} ${
-          viewMode === "calendar" ? styles.activeToggle : ""
-        }`}
-        onClick={() => onChange("calendar")}
-      >
-        Calendar
       </button>
     </div>
   );
