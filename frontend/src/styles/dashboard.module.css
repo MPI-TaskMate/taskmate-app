@@ -47,6 +47,38 @@
   min-width: 0;
 }
 
+.chartWrapper {
+  margin-top: 32px;
+}
+
+.chartCard {
+  background: var(--neutral-50);
+  border-radius: 18px;
+  padding: 20px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+}
+
+.chartHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.chartTitle {
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.chartSubtitle {
+  font-size: 14px;
+  color: var(--color-text-secondary);
+}
+
+.bar {
+  fill: var(--color-secondary);
+}
+
 @media (max-width: 1024px) {
   .cardsRow {
     flex-wrap: wrap;
