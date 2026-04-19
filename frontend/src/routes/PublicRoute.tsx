@@ -9,7 +9,7 @@ export default function PublicRoute({
   const { isAuthenticated } = useAuth();
 
   if (isAuthenticated) {
-    return <Navigate to="/tasks" replace />;
+    return <Navigate to="/dashboard" replace />;
   }
 
   return children;

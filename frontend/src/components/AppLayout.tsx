@@ -14,7 +14,7 @@ export default function AppLayout() {
         subjectError={subjectError}
       />
 
-      <main style={{ flex: 1, padding: "20px" }}>
+      <main style={{ flex: 1 }}>
         <Outlet />
       </main>
     </div>
