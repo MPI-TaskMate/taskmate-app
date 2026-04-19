@@ -32,6 +32,15 @@ export default function Sidebar({
 
       <div className={styles.navSection}>
         <NavLink
+          to="/dashboard"
+          className={({ isActive }) =>
+            `${styles.navItem} ${isActive ? styles.navItemActive : ""}`
+          }
+        >
+          Dashboard
+        </NavLink>
+
+        <NavLink
           to="/tasks"
           end
           className={({ isActive }) =>
