@@ -16,14 +16,13 @@ import {
   TASK_STATUS,
   type CreateTaskRequest,
 } from "../services/tasksService";
-import { useSubjects } from "../context/SubjectContext"; // ✅ ADĂUGAT
+import { useSubjects } from "../hooks/useSubjects";
 import styles from "../styles/tasks.module.css";
 
 type ViewMode = "list" | "kanban";
 
 export default function TasksPage() {
-  const { subjects } = useSubjects(); // ✅ ADĂUGAT
-
+  const { subjects } = useSubjects();
   const [viewMode, setViewMode] = useState<ViewMode>("kanban");
   const [tasks, setTasks] = useState<TaskItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -281,8 +280,14 @@ export default function TasksPage() {
 
               <div className={styles.searchContainer}>
                 <div className={styles.searchWrapper}>
-                  <img src="/assets/icons/search-icon.svg" className={styles.iconDefault} />
-                  <img src="/assets/icons/search-icon-hover.svg" className={styles.iconHover} />
+                  <img
+                    src="/assets/icons/search-icon.svg"
+                    className={styles.iconDefault}
+                  />
+                  <img
+                    src="/assets/icons/search-icon-hover.svg"
+                    className={styles.iconHover}
+                  />
                   <input
                     type="text"
                     placeholder="Search tasks..."
@@ -320,11 +325,38 @@ export default function TasksPage() {
                 <p>Start by adding your first task.</p>
               </div>
             ) : viewMode === "kanban" ? (
-              <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+              <DndContext
+                collisionDetection={closestCenter}
+                onDragEnd={handleDragEnd}
+              >
                 <section className={styles.kanbanBoard}>
-                  <KanbanColumn title="Todo" status={TASK_STATUS.Todo} tasks={todoTasks} subjects={subjects} onPinToggle={handlePinToggle} onEdit={handleOpenEditForm} onDelete={handleDeleteTask} />
-                  <KanbanColumn title="In Progress" status={TASK_STATUS.InProgress} tasks={inProgressTasks} subjects={subjects} onPinToggle={handlePinToggle} onEdit={handleOpenEditForm} onDelete={handleDeleteTask} />
-                  <KanbanColumn title="Done" status={TASK_STATUS.Done} tasks={doneTasks} subjects={subjects} onPinToggle={handlePinToggle} onEdit={handleOpenEditForm} onDelete={handleDeleteTask} />
+                  <KanbanColumn
+                    title="Todo"
+                    status={TASK_STATUS.Todo}
+                    tasks={todoTasks}
+                    subjects={subjects}
+                    onPinToggle={handlePinToggle}
+                    onEdit={handleOpenEditForm}
+                    onDelete={handleDeleteTask}
+                  />
+                  <KanbanColumn
+                    title="In Progress"
+                    status={TASK_STATUS.InProgress}
+                    tasks={inProgressTasks}
+                    subjects={subjects}
+                    onPinToggle={handlePinToggle}
+                    onEdit={handleOpenEditForm}
+                    onDelete={handleDeleteTask}
+                  />
+                  <KanbanColumn
+                    title="Done"
+                    status={TASK_STATUS.Done}
+                    tasks={doneTasks}
+                    subjects={subjects}
+                    onPinToggle={handlePinToggle}
+                    onEdit={handleOpenEditForm}
+                    onDelete={handleDeleteTask}
+                  />
                 </section>
               </DndContext>
             ) : (

@@ -1,19 +1,11 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import { SubjectContext } from "./SubjectContextDefinition";
 import {
   getSubjects,
   createSubject,
   deleteSubject,
   type Subject,
 } from "../services/subjectsService";
-
-type SubjectContextType = {
-  subjects: Subject[];
-  subjectError: string;
-  addSubject: (name: string, color: string) => Promise<void>;
-  removeSubject: (id: string) => Promise<void>;
-};
-
-const SubjectContext = createContext<SubjectContextType | null>(null);
 
 export function SubjectProvider({ children }: { children: React.ReactNode }) {
   const [subjects, setSubjects] = useState<Subject[]>([]);
@@ -57,10 +49,4 @@ export function SubjectProvider({ children }: { children: React.ReactNode }) {
       {children}
     </SubjectContext.Provider>
   );
-}
-
-export function useSubjects() {
-  const ctx = useContext(SubjectContext);
-  if (!ctx) throw new Error("useSubjects must be used inside SubjectProvider");
-  return ctx;
 }

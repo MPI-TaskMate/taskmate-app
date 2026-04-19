@@ -1,6 +1,6 @@
 import { Outlet } from "react-router-dom";
 import Sidebar from "./Sidebar";
-import { useSubjects } from "../context/SubjectContext";
+import { useSubjects } from "../hooks/useSubjects";
 
 export default function AppLayout() {
   const { subjects, subjectError, addSubject, removeSubject } = useSubjects();
