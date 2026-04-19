@@ -1,6 +1,7 @@
 import { useState } from "react";
 import type { Subject } from "../services/subjectsService";
 import { NavLink } from "react-router-dom";
+import { useAuth } from "../hooks/useAuth";
 import styles from "../styles/sidebar.module.css";
 
 type Props = {
@@ -19,6 +20,8 @@ export default function Sidebar({
   const [newName, setNewName] = useState("");
   const [newColor, setNewColor] = useState("#4f9fd1");
   const [showAdd, setShowAdd] = useState(false);
+
+  const { logout } = useAuth();
 
   function handleAddClick() {
     onAdd(newName, newColor);
@@ -115,6 +118,12 @@ export default function Sidebar({
         </div>
       )}
       {subjectError && <p className={styles.errorText}>{subjectError}</p>}
+      <div className={styles.logoutWrapper}>
+        <button className={styles.logoutButton} onClick={logout}>
+          <span className={styles.logoutIcon}>↩</span>
+          Log Out
+        </button>
+      </div>
     </aside>
   );
 }
