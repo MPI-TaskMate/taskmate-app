@@ -341,19 +341,21 @@
   justify-content: space-between;
   align-items: flex-start;
   gap: 1rem;
+  margin-bottom: 10px;
 }
 
 .cardHeader {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
+  margin-bottom: 10px;
 }
 
 .cardFooter {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-top: 6px;
+  margin-top: 20px;
 }
 
 .labelsRow {
@@ -675,4 +677,62 @@
   .taskTitle {
     font-size: 0.98rem;
   }
+}
+
+.statusSelect {
+  appearance: none;
+  border-radius: 999px;
+  text-align: center;
+  text-align-last: center;
+  padding: 4px 20px 4px 20px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  cursor: pointer;
+  border: 1px solid transparent;
+  outline: none;
+  display: inline-flex;
+  align-items: center;
+}
+
+.statusSelect.todoBadge {
+  color: var(--color-primary);
+  background: var(--color-primary-light);
+  border-color: var(--color-primary);
+}
+
+.statusSelect.inProgressBadge {
+  color: var(--color-accent);
+  background: var(--color-accent-light);
+  border-color: var(--color-accent);
+}
+
+.statusSelect.doneBadge {
+  color: var(--color-secondary);
+  background: var(--color-secondary-light);
+  border-color: var(--color-secondary);
+}
+
+.statusSelect:focus {
+  box-shadow: none;
+}
+
+.statusRight {
+  margin-left: auto;
+}
+
+.statusSelect option {
+  color: initial;
+  background: white;
+  text-align: center;
+  text-align: left;
+}
+
+.statusSelect option:checked {
+  background: #e5e7eb;
+  color: black;
+}
+
+.completedText {
+  text-decoration: line-through;
+  opacity: 0.8;
 }

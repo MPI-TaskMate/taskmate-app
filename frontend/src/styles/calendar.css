@@ -229,3 +229,8 @@
 .fc * {
   border-color: var(--neutral-300) !important;
 }
+
+.doneTask {
+  text-decoration: line-through;
+  opacity: 0.6;
+}

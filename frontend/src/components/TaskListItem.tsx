@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTasks } from "../hooks/useTasks";
 import styles from "../styles/tasks.module.css";
 import { type Subject } from "../services/subjectsService";
 import {
@@ -26,6 +27,8 @@ export default function TaskListItem({
 }: Props) {
   const [menuOpen, setMenuOpen] = useState(false);
 
+  const { changeTaskStatus } = useTasks(); 
+
   const deadlineStatus =
     task.status !== TASK_STATUS.Done
       ? getDeadlineStatus(task.deadline)
@@ -36,7 +39,13 @@ export default function TaskListItem({
   return (
     <div className={styles.listRow}>
       <div className={styles.colTitle}>
-        <p className={styles.taskTitle}>{task.title}</p>
+        <p
+          className={`${styles.taskTitle} ${
+            task.status === TASK_STATUS.Done ? styles.completedText : ""
+          }`}
+        >
+          {task.title}
+        </p>
         {task.description && (
           <span className={styles.taskDescription}>{task.description}</span>
         )}
@@ -65,10 +74,10 @@ export default function TaskListItem({
         {task.deadline ? (
           <span
             className={`
-        ${styles.deadline}
-        ${deadlineStatus === "overdue" ? styles.deadlineOverdue : ""}
-        ${deadlineStatus === "today" ? styles.deadlineToday : ""}
-      `}
+              ${styles.deadline}
+              ${deadlineStatus === "overdue" ? styles.deadlineOverdue : ""}
+              ${deadlineStatus === "today" ? styles.deadlineToday : ""}
+            `}
           >
             {formatDate(task.deadline)}
           </span>
@@ -78,11 +87,18 @@ export default function TaskListItem({
       </div>
 
       <div className={styles.colStatus}>
-        <span
-          className={`${styles.statusBadge} ${getStatusClass(task.status)}`}
+        <select
+          value={task.status}
+          onChange={(e) =>
+            changeTaskStatus(task.id, Number(e.target.value) as TaskStatus)
+          }
+          onPointerDown={(e) => e.stopPropagation()}
+          className={`${styles.statusSelect} ${getStatusClass(task.status)}`}
         >
-          {getStatusLabel(task.status)}
-        </span>
+          <option value={TASK_STATUS.Todo}>Todo</option>
+          <option value={TASK_STATUS.InProgress}>In Progress</option>
+          <option value={TASK_STATUS.Done}>Done</option>
+        </select>
       </div>
 
       <div className={styles.menuWrapper}>
@@ -93,7 +109,6 @@ export default function TaskListItem({
             e.stopPropagation();
             setMenuOpen((prev) => !prev);
           }}
-          aria-label="More actions"
         >
           ⋮
         </button>
@@ -101,7 +116,6 @@ export default function TaskListItem({
         {menuOpen && (
           <div className={styles.dropdownMenu}>
             <button
-              type="button"
               className={styles.menuItem}
               onClick={(e) => {
                 e.stopPropagation();
@@ -113,7 +127,6 @@ export default function TaskListItem({
             </button>
 
             <button
-              type="button"
               className={`${styles.menuItem} ${styles.deleteMenuItem}`}
               onClick={(e) => {
                 e.stopPropagation();
@@ -128,7 +141,6 @@ export default function TaskListItem({
 
         <div className={styles.colPin}>
           <button
-            type="button"
             className={styles.pinButton}
             onClick={(e) => {
               e.stopPropagation();
@@ -173,19 +185,6 @@ function getPriorityClass(priority: TaskPriority) {
       return styles.priorityHigh;
     default:
       return "";
-  }
-}
-
-function getStatusLabel(status: TaskStatus) {
-  switch (status) {
-    case TASK_STATUS.Todo:
-      return "Todo";
-    case TASK_STATUS.InProgress:
-      return "In Progress";
-    case TASK_STATUS.Done:
-      return "Done";
-    default:
-      return "Unknown";
   }
 }
 
