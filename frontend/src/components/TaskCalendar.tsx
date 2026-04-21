@@ -36,11 +36,18 @@ export default function TaskCalendar({ tasks }: Props) {
         left: "title",
         right: "today prev,next",
       }}
-      eventContent={(arg) => (
-        <div className="calendarMiniCard" title={arg.event.title}>
-          {arg.event.title}
-        </div>
-      )}
+      eventContent={(arg) => {
+        const isDone = arg.event.classNames.includes("done");
+
+        return (
+          <div
+            className={`calendarMiniCard ${isDone ? "doneTask" : ""}`}
+            title={arg.event.title}
+          >
+            {arg.event.title}
+          </div>
+        );
+      }}
     />
   );
 }
