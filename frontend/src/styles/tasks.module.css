@@ -211,7 +211,7 @@
   flex-direction: column;
   align-items: flex-end;
   gap: 4px;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.8rem;
 }
 
 .focusButtons {
@@ -252,6 +252,46 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
+}
+
+.filtersRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 10px;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.filterSelect {
+  min-width: 140px;
+  padding: 10px 36px 10px 12px;
+  border: 1px solid var(--neutral-300);
+  border-radius: 10px;
+  background: var(--neutral-50);
+  font: inherit;
+  color: var(--neutral-700);
+  font-size: 15px;
+  appearance: none;
+}
+
+.filterSelect:focus {
+  outline: none;
+  border: 2px solid var(--color-primary);
+}
+
+.resetFiltersButton {
+  padding: 10px 14px;
+  border: none;
+  border-radius: 10px;
+  background: var(--color-primary);
+  color: var(--neutral-50);
+  cursor: pointer;
+  font: inherit;
+}
+
+.resetFiltersButton:hover {
+  opacity: 0.9;
 }
 
 .kanbanBoard {
