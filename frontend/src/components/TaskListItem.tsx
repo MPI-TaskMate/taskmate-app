@@ -35,6 +35,8 @@ export default function TaskListItem({
       : "none";
 
   const subject = subjects.find((s) => s.id === task.subjectId);
+  const estimatedHours =
+    task.estimatedMinutes != null ? task.estimatedMinutes / 60 : null;
 
   return (
     <div className={styles.listRow}>
@@ -48,6 +50,9 @@ export default function TaskListItem({
         </p>
         {task.description && (
           <span className={styles.taskDescription}>{task.description}</span>
+        )}
+        {estimatedHours != null && (
+          <span className={styles.timeEstimate}>Est: {formatHours(estimatedHours)}h</span>
         )}
       </div>
 
@@ -160,6 +165,10 @@ export default function TaskListItem({
       </div>
     </div>
   );
+}
+
+function formatHours(hours: number) {
+  return Number.isInteger(hours) ? String(hours) : hours.toFixed(2).replace(/\.?0+$/, "");
 }
 
 function getPriorityLabel(priority: TaskPriority) {

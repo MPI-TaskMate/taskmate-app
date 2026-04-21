@@ -47,6 +47,28 @@
   min-width: 0;
 }
 
+.timeSummary {
+  margin-top: 16px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(180px, 1fr));
+  gap: 12px;
+}
+
+.timeSummaryItem {
+  background: var(--neutral-50);
+  border: 1px solid var(--neutral-200);
+  border-radius: 12px;
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.timeSummaryLabel {
+  font-size: 0.85rem;
+  color: var(--color-text-secondary);
+}
+
 .chartWrapper {
   margin-top: 32px;
 }
@@ -92,5 +114,9 @@
 @media (max-width: 640px) {
   .cardsRow > * {
     flex: 1 1 100%;
+  }
+
+  .timeSummary {
+    grid-template-columns: 1fr;
   }
 }

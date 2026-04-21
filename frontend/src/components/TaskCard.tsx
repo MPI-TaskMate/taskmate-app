@@ -42,6 +42,8 @@ export default function TaskCard({
   });
 
   const subject = subjects.find((s) => s.id === task.subjectId);
+  const estimatedHours =
+    task.estimatedMinutes != null ? task.estimatedMinutes / 60 : null;
 
   const handleStatusSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const newStatus = Number(e.target.value) as TaskStatus;
@@ -146,6 +148,10 @@ export default function TaskCard({
         <p className={styles.taskDescription}>{task.description}</p>
       )}
 
+      {estimatedHours != null && (
+        <p className={styles.timeEstimate}>Est: {formatHours(estimatedHours)}h</p>
+      )}
+
       <div className={styles.cardFooter}>
         {task.deadline && (
           <span
@@ -173,6 +179,10 @@ export default function TaskCard({
       </div>
     </article>
   );
+}
+
+function formatHours(hours: number) {
+  return Number.isInteger(hours) ? String(hours) : hours.toFixed(2).replace(/\.?0+$/, "");
 }
 
 function getPriorityClass(priority: TaskPriority) {

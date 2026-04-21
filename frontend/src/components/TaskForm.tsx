@@ -27,6 +27,7 @@ export default function TaskForm({
   const [description, setDescription] = useState("");
   const [deadline, setDeadline] = useState("");
   const [priority, setPriority] = useState<TaskPriority>(TASK_PRIORITY.Medium);
+  const [estimatedHours, setEstimatedHours] = useState("");
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [subjectId, setSubjectId] = useState<string | null>(null);
@@ -39,12 +40,18 @@ export default function TaskForm({
         initialTask.deadline ? initialTask.deadline.slice(0, 10) : "",
       );
       setPriority(initialTask.priority);
+      setEstimatedHours(
+        initialTask.estimatedMinutes != null
+          ? String(initialTask.estimatedMinutes / 60)
+          : "",
+      );
       setSubjectId(initialTask.subjectId ?? null);
     } else {
       setTitle("");
       setDescription("");
       setDeadline("");
       setPriority(TASK_PRIORITY.Medium);
+      setEstimatedHours("");
       setSubjectId(null);
     }
   }, [initialTask]);
@@ -57,6 +64,17 @@ export default function TaskForm({
       return;
     }
 
+    const parsedEstimatedHours =
+      estimatedHours.trim() === "" ? null : Number(estimatedHours);
+
+    if (
+      parsedEstimatedHours != null &&
+      (!Number.isFinite(parsedEstimatedHours) || parsedEstimatedHours < 0)
+    ) {
+      setError("Estimated time must be a number greater than or equal to 0.");
+      return;
+    }
+
     setError("");
     setSubmitting(true);
 
@@ -66,6 +84,8 @@ export default function TaskForm({
         description: description.trim() || "",
         deadline: deadline || null,
         priority,
+        estimatedMinutes:
+          parsedEstimatedHours == null ? null : Math.round(parsedEstimatedHours * 60),
         subjectId,
       });
     } finally {
@@ -143,6 +163,19 @@ export default function TaskForm({
               <option value={TASK_PRIORITY.Medium}>Medium</option>
               <option value={TASK_PRIORITY.High}>High</option>
             </select>
+          </div>
+
+          <div className={styles.field}>
+            <label htmlFor="task-estimated-hours">Estimated Time (hours)</label>
+            <input
+              id="task-estimated-hours"
+              type="number"
+              min="0"
+              step="0.25"
+              value={estimatedHours}
+              onChange={(e) => setEstimatedHours(e.target.value)}
+              placeholder="e.g. 1.5"
+            />
           </div>
 
           <div className={styles.actions}>
