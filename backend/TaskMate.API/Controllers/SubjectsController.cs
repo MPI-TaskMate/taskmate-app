@@ -90,7 +90,7 @@ namespace TaskMate.API.Controllers
         
         // PUT /api/subjects/{id}
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateSubject(Guid id, [FromBody] Subject updated)
+        public async Task<IActionResult> UpdateSubject(Guid id, [FromBody] SubjectRequest request)
         {
             var userId = GetUserId();
 
@@ -105,14 +105,14 @@ namespace TaskMate.API.Controllers
                 return NotFound();
             }
 
-            if (string.IsNullOrWhiteSpace(updated.Name))
+            if (string.IsNullOrWhiteSpace(request.Name))
             {
                 _logger.LogWarning("Update subject failed because name is required. SubjectId: {SubjectId}, UserId: {UserId}", id, userId);
                 return BadRequest(new { message = "Name is required" });
             }
 
-            subject.Name = updated.Name;
-            subject.Color = updated.Color;
+            subject.Name = request.Name;
+            subject.Color = request.Color;
 
             await _context.SaveChangesAsync();
 

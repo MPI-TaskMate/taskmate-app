@@ -104,6 +104,38 @@ public class SubjectsTests
             s.ContainsKey("name") && s["name"].GetString() == "User1 Private Subject");
     }
 
+    // ─── UPDATE ─────────────────────────────────────────────────────────────────
+
+    // TC-SUBJECT-06: Update subject with { name, color } only → 200 (#124)
+    [Fact]
+    public async Task UpdateSubject_WithNameAndColor_Returns200()
+    {
+        var client = await CreateAuthenticatedClient();
+
+        var createResponse = await client.PostAsync("/api/subjects", new
+        {
+            name = "Original",
+            color = "#111111"
+        });
+        Assert.Equal(HttpStatusCode.Created, createResponse.StatusCode);
+
+        var created = await ApiClient.DeserializeAsync<Dictionary<string, JsonElement>>(createResponse);
+        var subjectId = created!["id"].GetString();
+
+        var putResponse = await client.PutAsync($"/api/subjects/{subjectId}", new
+        {
+            name = "New Name",
+            color = "#000000"
+        });
+
+        Assert.Equal(HttpStatusCode.OK, putResponse.StatusCode);
+
+        var updated = await ApiClient.DeserializeAsync<Dictionary<string, JsonElement>>(putResponse);
+        Assert.NotNull(updated);
+        Assert.Equal("New Name", updated["name"].GetString());
+        Assert.Equal("#000000", updated["color"].GetString());
+    }
+
     // ─── DELETE ───────────────────────────────────────────────────────────────
 
     // TC-SUBJECT-08: Delete existing subject → 204
