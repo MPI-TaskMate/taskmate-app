@@ -38,6 +38,7 @@ export type CreateTaskRequest = {
   description?: string;
   deadline?: string | null;
   priority: TaskPriority;
+  estimatedMinutes?: number | null;
   subjectId?: string | null;
 };
 
@@ -47,6 +48,7 @@ export type UpdateTaskRequest = {
   deadline?: string | null;
   priority: TaskPriority;
   status: TaskStatus;
+  estimatedMinutes?: number | null;
   subjectId?: string | null;
 };
 

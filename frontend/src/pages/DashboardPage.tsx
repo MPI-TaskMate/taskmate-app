@@ -21,6 +21,10 @@ function getStartOfWeek(date: Date) {
   return new Date(d.setDate(diff));
 }
 
+function formatHours(hours: number) {
+  return Number.isInteger(hours) ? String(hours) : hours.toFixed(2).replace(/\.?0+$/, "");
+}
+
 export default function DashboardPage() {
   const { tasks } = useTasks();
   const total = tasks.length;
@@ -59,6 +63,41 @@ export default function DashboardPage() {
     });
 
     return data;
+  }, [tasks]);
+
+  const { todayEstimatedHours, weekEstimatedHours } = useMemo(() => {
+    const now = new Date();
+    const todayStart = new Date(now);
+    todayStart.setHours(0, 0, 0, 0);
+
+    const startOfWeek = getStartOfWeek(now);
+    startOfWeek.setHours(0, 0, 0, 0);
+
+    const endOfWeek = new Date(startOfWeek);
+    endOfWeek.setDate(endOfWeek.getDate() + 7);
+
+    let dailyMinutes = 0;
+    let weeklyMinutes = 0;
+
+    tasks.forEach((task) => {
+      if (task.estimatedMinutes == null || !task.deadline) return;
+
+      const taskDate = new Date(task.deadline);
+      taskDate.setHours(0, 0, 0, 0);
+
+      if (taskDate.getTime() === todayStart.getTime()) {
+        dailyMinutes += task.estimatedMinutes;
+      }
+
+      if (taskDate >= startOfWeek && taskDate < endOfWeek) {
+        weeklyMinutes += task.estimatedMinutes;
+      }
+    });
+
+    return {
+      todayEstimatedHours: dailyMinutes / 60,
+      weekEstimatedHours: weeklyMinutes / 60,
+    };
   }, [tasks]);
 
   return (
@@ -101,6 +140,17 @@ export default function DashboardPage() {
                 color="var(--color-secondary)"
                 count={done}
               />
+            </div>
+
+            <div className={styles.timeSummary}>
+              <div className={styles.timeSummaryItem}>
+                <span className={styles.timeSummaryLabel}>Today estimated</span>
+                <strong>{formatHours(todayEstimatedHours)}h</strong>
+              </div>
+              <div className={styles.timeSummaryItem}>
+                <span className={styles.timeSummaryLabel}>This week estimated</span>
+                <strong>{formatHours(weekEstimatedHours)}h</strong>
+              </div>
             </div>
 
             <div className={styles.chartWrapper}>

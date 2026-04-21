@@ -507,6 +507,12 @@
   margin-bottom: 8px;
 }
 
+.timeEstimate {
+  font-size: 0.8rem;
+  color: var(--neutral-500);
+  margin: 0;
+}
+
 .pinButton {
   display: flex;
   align-items: center;
