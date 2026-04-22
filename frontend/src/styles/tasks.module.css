@@ -739,6 +739,40 @@
     padding: 1.5rem 2rem;
   }
 
+  .addTaskButton {
+    min-height: 40px;
+    font-size: 0.85rem;
+  }
+
+  .filtersRow {
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .filterSelect {
+    min-width: 120px;
+    padding: 6px 10px;
+    font-size: 13px;
+    border-radius: 10px;
+  }
+
+  .resetFiltersButton {
+    padding: 6px 12px;
+    font-size: 13px;
+    border-radius: 10px;
+  }
+
+  .focusButtons button {
+    padding: 6px 12px;
+    font-size: 13px;
+    border-radius: 10px;
+  }
+
+  .searchInput {
+    padding: 8px 12px 8px 28px;
+    font-size: 13px;
+  }
+
   .kanbanBoard {
     grid-template-columns: 1fr;
   }
@@ -816,6 +850,63 @@
   .content {
     padding: 1rem;
     width: 100%;
+  }
+
+  .actionsRow {
+    display: flex;
+    align-items: center;
+    gap: 3rem;
+  }
+
+  .filtersRow {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    width: 100%;
+    margin: 10px 0;
+  }
+
+  .filterSelect {
+    width: 100%;
+    min-width: unset;
+    padding: 8px 10px;
+    font-size: 13px;
+    border-radius: 12px;
+  }
+
+  .searchContainer {
+    width: 100%;
+    align-items: stretch;
+  }
+
+  .searchWrapper {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .searchInput {
+    width: 100%;
+  }
+
+  .resetFiltersButton {
+    grid-column: span 2;
+    width: 100%;
+    padding: 10px;
+    font-size: 13px;
+    border-radius: 12px;
+  }
+
+  .focusButtons {
+    grid-column: span 2;
+    width: 100%;
+    margin: 0;
+  }
+
+  .focusButtons button {
+    width: 100%;
+    padding: 10px;
+    border-radius: 12px;
+    font-size: 13px;
   }
 
   .header {
