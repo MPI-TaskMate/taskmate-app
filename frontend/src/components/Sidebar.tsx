@@ -9,6 +9,8 @@ type Props = {
   onAdd: (name: string, color: string) => void;
   onDelete: (id: string) => void;
   subjectError?: string;
+  isOpen: boolean;
+  onClose: () => void;
 };
 
 export default function Sidebar({
@@ -16,6 +18,8 @@ export default function Sidebar({
   onAdd,
   onDelete,
   subjectError,
+  isOpen,
+  onClose,
 }: Props) {
   const [newName, setNewName] = useState("");
   const [newColor, setNewColor] = useState("#4f9fd1");
@@ -30,100 +34,116 @@ export default function Sidebar({
   }
 
   return (
-    <aside className={styles.sidebar}>
-      <h3 className={styles.sidebarTitle}>Navigation</h3>
+    <>
+      {isOpen && window.innerWidth <= 768 && (
+        <div className={styles.overlay} onClick={onClose} />
+      )}
 
-      <div className={styles.navSection}>
-        <NavLink
-          to="/dashboard"
-          className={({ isActive }) =>
-            `${styles.navItem} ${isActive ? styles.navItemActive : ""}`
-          }
-        >
-          Dashboard
-        </NavLink>
+      <aside
+        className={`${styles.sidebar} ${isOpen ? styles.sidebarOpen : ""}`}
+      >
+        <h3 className={styles.sidebarTitle}>Navigation</h3>
 
-        <NavLink
-          to="/tasks"
-          end
-          className={({ isActive }) =>
-            `${styles.navItem} ${isActive ? styles.navItemActive : ""}`
-          }
-        >
-          Tasks
-        </NavLink>
+        <div className={styles.navSection}>
+          <NavLink
+            to="/dashboard"
+            onClick={onClose}
+            className={({ isActive }) =>
+              `${styles.navItem} ${isActive ? styles.navItemActive : ""}`
+            }
+          >
+            Dashboard
+          </NavLink>
 
-        <NavLink
-          to="/calendar"
-          className={({ isActive }) =>
-            `${styles.navItem} ${isActive ? styles.navItemActive : ""}`
-          }
-        >
-          Calendar
-        </NavLink>
-      </div>
+          <NavLink
+            to="/tasks"
+            end
+            onClick={onClose}
+            className={({ isActive }) =>
+              `${styles.navItem} ${isActive ? styles.navItemActive : ""}`
+            }
+          >
+            Tasks
+          </NavLink>
 
-      <div className={styles.divider} />
+          <NavLink
+            to="/calendar"
+            onClick={onClose}
+            className={({ isActive }) =>
+              `${styles.navItem} ${isActive ? styles.navItemActive : ""}`
+            }
+          >
+            Calendar
+          </NavLink>
+        </div>
 
-      <h3 className={styles.sidebarTitle}>Subjects</h3>
-      <div className={styles.subjectList}>
-        <div className={styles.subjectRow}>All</div>
-        {subjects.map((s) => (
-          <div key={s.id} className={styles.subjectRow}>
-            <div className={styles.subjectLeft}>
-              <span
-                className={styles.tagIcon}
-                style={{ backgroundColor: s.color || "#94a3b8" }}
-              />
-              <span>{s.name}</span>
+        <div className={styles.divider} />
+
+        <h3 className={styles.sidebarTitle}>Subjects</h3>
+
+        <div className={styles.subjectList}>
+          <div className={styles.subjectRow}>All</div>
+
+          {subjects.map((s) => (
+            <div key={s.id} className={styles.subjectRow}>
+              <div className={styles.subjectLeft}>
+                <span
+                  className={styles.tagIcon}
+                  style={{ backgroundColor: s.color || "#94a3b8" }}
+                />
+                <span>{s.name}</span>
+              </div>
+
+              <button
+                className={styles.deleteBtn}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onDelete(s.id);
+                }}
+              >
+                ×
+              </button>
             </div>
+          ))}
+        </div>
 
-            <button
-              className={styles.deleteBtn}
-              onClick={(e) => {
-                e.stopPropagation();
-                onDelete(s.id);
-              }}
-            >
-              ×
+        <button
+          className={styles.addTagButton}
+          onClick={() => setShowAdd((prev) => !prev)}
+        >
+          + Add tag
+        </button>
+
+        {showAdd && (
+          <div className={styles.quickAdd}>
+            <input
+              type="text"
+              value={newName}
+              onChange={(e) => setNewName(e.target.value)}
+              placeholder="Subject name"
+            />
+
+            <input
+              type="color"
+              value={newColor}
+              onChange={(e) => setNewColor(e.target.value)}
+            />
+
+            <button className={styles.quickAddAdd} onClick={handleAddClick}>
+              +
             </button>
           </div>
-        ))}
-      </div>
+        )}
 
-      <button
-        className={styles.addTagButton}
-        onClick={() => setShowAdd((prev) => !prev)}
-      >
-        + Add tag
-      </button>
+        {subjectError && <p className={styles.errorText}>{subjectError}</p>}
 
-      {showAdd && (
-        <div className={styles.quickAdd}>
-          <input
-            value={newName}
-            onChange={(e) => setNewName(e.target.value)}
-            placeholder="Subject name"
-          />
-
-          <input
-            type="color"
-            value={newColor}
-            onChange={(e) => setNewColor(e.target.value)}
-          />
-
-          <button className={styles.quickAddAdd} onClick={handleAddClick}>
-            +
+        <div className={styles.logoutWrapper}>
+          <button className={styles.logoutButton} onClick={logout}>
+            <span className={styles.logoutIcon}>↩</span>
+            Log Out
           </button>
         </div>
-      )}
-      {subjectError && <p className={styles.errorText}>{subjectError}</p>}
-      <div className={styles.logoutWrapper}>
-        <button className={styles.logoutButton} onClick={logout}>
-          <span className={styles.logoutIcon}>↩</span>
-          Log Out
-        </button>
-      </div>
-    </aside>
+      </aside>
+    </>
   );
 }

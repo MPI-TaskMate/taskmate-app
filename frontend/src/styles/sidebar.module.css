@@ -246,49 +246,26 @@
   }
 }
 
-@media (max-width: 720px) {
-  .page {
-    flex-direction: column;
-  }
-
+@media (max-width: 768px) {
   .sidebar {
-    position: relative;
-    width: 100%;
-    height: auto;
-    padding: 0.75rem 0.75rem 0.5rem;
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 260px;
+    height: 100vh;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    z-index: 1000;
   }
 
-  .content {
-    padding: 1rem;
+  .sidebarOpen {
+    transform: translateX(0);
   }
 
-  .subjectList {
-    flex-direction: row;
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    gap: 10px;
-    padding-bottom: 6px;
-    scrollbar-width: none;
-  }
-
-  .subjectList::-webkit-scrollbar {
-    display: none;
-  }
-
-  .subjectRow {
-    flex: 0 0 auto;
-    background: rgba(255, 255, 255, 0.1);
-    padding: 6px 10px;
-  }
-
-  .deleteBtn {
-    display: none;
-  }
-
-  .quickAdd {
-    display: grid;
-    grid-template-columns: 1fr auto auto;
-    gap: 6px;
-    align-items: center;
+  .overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 999;
   }
 }
