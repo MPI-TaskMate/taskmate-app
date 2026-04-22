@@ -215,3 +215,83 @@
   color: var(--color-primary);
   font-weight: 500;
 }
+
+@media (max-width: 1024px) {
+  .page {
+    display: flex;
+    flex-direction: row;
+  }
+
+  .left {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .leftContent {
+    margin: 0;
+    text-align: center;
+  }
+
+  .right {
+    flex: 1;
+    -webkit-mask-image: none;
+    mask-image: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    padding: 2rem;
+  }
+
+  .formWrapper {
+    width: 100%;
+    max-width: 380px;
+    background: var(--neutral-50);
+    border-radius: 16px;
+    padding: 1.8rem 1.4rem;
+    margin: 0 auto;
+  }
+
+  .title {
+    font-size: 1.6rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .page {
+    padding: 1.5rem 1rem;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .left {
+    display: none;
+  }
+
+  .title {
+    font-size: 1.4rem;
+    text-align: center;
+    margin-bottom: 1.5rem;
+  }
+
+  .form {
+    gap: 1.2rem;
+  }
+
+  .input {
+    font-size: 1rem;
+    padding: 1.2rem 1rem 0.6rem;
+  }
+
+  .button {
+    width: 100%;
+    padding: 1.1rem;
+  }
+
+  .link {
+    text-align: center;
+    font-size: 0.9rem;
+  }
+}
