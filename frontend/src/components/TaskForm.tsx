@@ -85,7 +85,9 @@ export default function TaskForm({
         deadline: deadline || null,
         priority,
         estimatedMinutes:
-          parsedEstimatedHours == null ? null : Math.round(parsedEstimatedHours * 60),
+          parsedEstimatedHours == null
+            ? null
+            : Math.round(parsedEstimatedHours * 60),
         subjectId,
       });
     } finally {
@@ -140,42 +142,44 @@ export default function TaskForm({
             />
           </div>
 
-          <div className={styles.field}>
-            <label htmlFor="task-deadline">Deadline</label>
-            <input
-              id="task-deadline"
-              type="date"
-              value={deadline}
-              onChange={(e) => setDeadline(e.target.value)}
-            />
-          </div>
+          <div className={styles.rowFields}>
+            <div className={styles.field}>
+              <label htmlFor="task-deadline">Deadline</label>
+              <input
+                id="task-deadline"
+                type="date"
+                value={deadline}
+                onChange={(e) => setDeadline(e.target.value)}
+              />
+            </div>
 
-          <div className={styles.field}>
-            <label htmlFor="task-priority">Priority</label>
-            <select
-              id="task-priority"
-              value={priority}
-              onChange={(e) =>
-                setPriority(Number(e.target.value) as TaskPriority)
-              }
-            >
-              <option value={TASK_PRIORITY.Low}>Low</option>
-              <option value={TASK_PRIORITY.Medium}>Medium</option>
-              <option value={TASK_PRIORITY.High}>High</option>
-            </select>
-          </div>
+            <div className={styles.field}>
+              <label htmlFor="task-priority">Priority</label>
+              <select
+                id="task-priority"
+                value={priority}
+                onChange={(e) =>
+                  setPriority(Number(e.target.value) as TaskPriority)
+                }
+              >
+                <option value={TASK_PRIORITY.Low}>Low</option>
+                <option value={TASK_PRIORITY.Medium}>Medium</option>
+                <option value={TASK_PRIORITY.High}>High</option>
+              </select>
+            </div>
 
-          <div className={styles.field}>
-            <label htmlFor="task-estimated-hours">Estimated Time (hours)</label>
-            <input
-              id="task-estimated-hours"
-              type="number"
-              min="0"
-              step="0.25"
-              value={estimatedHours}
-              onChange={(e) => setEstimatedHours(e.target.value)}
-              placeholder="e.g. 1.5"
-            />
+            <div className={styles.field}>
+              <label htmlFor="task-estimated-hours">Estimated Time</label>
+              <input
+                id="task-estimated-hours"
+                type="number"
+                min="0"
+                step="0.25"
+                value={estimatedHours}
+                onChange={(e) => setEstimatedHours(e.target.value)}
+                placeholder="e.g. 1.5"
+              />
+            </div>
           </div>
 
           <div className={styles.actions}>
