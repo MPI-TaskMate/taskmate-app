@@ -9,8 +9,8 @@
 
 .main {
   flex: 1;
-  min-width: 0; /* 🔥 obligatoriu */
-  display: flex; /* 🔥 ca să lase contentul să crească */
+  min-width: 0; 
+  display: flex; 
   flex-direction: column;
 }
 

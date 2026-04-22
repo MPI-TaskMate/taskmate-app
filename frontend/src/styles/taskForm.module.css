@@ -134,3 +134,48 @@
   background: #e2e8f0;
 }
 
+@media (max-width: 720px) {
+  .overlay {
+    align-items: stretch; 
+    justify-content: stretch;
+    padding: 0;
+    z-index: 9999;
+  }
+
+  .modal {
+    width: 100%;
+    max-width: 100%;
+    height: 100vh; 
+    border-radius: 0; 
+  }
+
+  .form {
+    height: 100%;
+    overflow-y: auto;
+    padding: 1.2rem;
+    gap: 1rem;
+  }
+
+  .field input,
+  .field textarea,
+  .field select {
+    padding: 0.8rem;
+    font-size: 0.95rem;
+  }
+
+  .actions {
+    position: sticky;
+    bottom: 0;
+    background: white;
+    padding-top: 0.8rem;
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .primaryButton,
+  .secondaryButton {
+    flex: 1;
+    padding: 0.8rem;
+    font-size: 0.9rem;
+  }
+}
