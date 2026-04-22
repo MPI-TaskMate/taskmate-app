@@ -13,8 +13,6 @@ export default function AppRoutes() {
   return (
     <SubjectProvider>
       <Routes>
-        <Route path="*" element={<Navigate to="/login" />} />
-
         <Route
           path="/login"
           element={
@@ -44,6 +42,8 @@ export default function AppRoutes() {
           <Route path="/calendar" element={<CalendarPage />} />
           <Route path="/dashboard" element={<DashboardPage />} />
         </Route>
+
+        <Route path="*" element={<Navigate to="/login" />} />
       </Routes>
     </SubjectProvider>
   );
