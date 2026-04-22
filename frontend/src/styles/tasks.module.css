@@ -461,6 +461,64 @@
   mask-size: contain;
 }
 
+.statusSelect {
+  appearance: none;
+  border-radius: 999px;
+  text-align: center;
+  text-align-last: center;
+  padding: 4px 20px 4px 20px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  cursor: pointer;
+  border: 1px solid transparent;
+  outline: none;
+  display: inline-flex;
+  align-items: center;
+}
+
+.statusSelect.todoBadge {
+  color: var(--color-primary);
+  background: var(--color-primary-light);
+  border-color: var(--color-primary);
+}
+
+.statusSelect.inProgressBadge {
+  color: var(--color-accent);
+  background: var(--color-accent-light);
+  border-color: var(--color-accent);
+}
+
+.statusSelect.doneBadge {
+  color: var(--color-secondary);
+  background: var(--color-secondary-light);
+  border-color: var(--color-secondary);
+}
+
+.statusSelect:focus {
+  box-shadow: none;
+}
+
+.statusRight {
+  margin-left: auto;
+}
+
+.statusSelect option {
+  color: initial;
+  background: var(--neutral-50);
+  text-align: center;
+  text-align: left;
+}
+
+.statusSelect option:checked {
+  background: var(--neutral-50);
+  color: var(--neutral-700);
+}
+
+.completedText {
+  text-decoration: line-through;
+  opacity: 0.8;
+}
+
 .listHeader {
   display: grid;
   grid-template-columns: 2fr 1fr 1fr 1fr 1fr 40px;
@@ -668,18 +726,90 @@
   max-width: 300px;
 }
 
-@media (max-width: 1080px) {
+@media (max-width: 1024px) {
+  .listView {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    background: transparent;
+    border: none;
+  }
+
+  .content {
+    padding: 1.5rem 2rem;
+  }
+
   .kanbanBoard {
     grid-template-columns: 1fr;
+  }
+
+  .listHeader {
+    display: none;
+  }
+
+  .listRow {
+    position: relative;
+    grid-template-columns: 1fr;
+    gap: 0.6rem;
+    padding: 1rem;
+    border-radius: 16px;
+    margin-bottom: 0.8rem;
+    background: var(--neutral-50);
+    border: 1px solid var(--neutral-200);
+  }
+
+  .colSubject,
+  .colPriority,
+  .colDeadline,
+  .colStatus {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .colSubject::before {
+    content: "Subject";
+    font-weight: 600;
+    color: var(--neutral-400);
+  }
+
+  .colPriority::before {
+    content: "Priority";
+    font-weight: 600;
+    color: var(--neutral-400);
+  }
+
+  .colDeadline::before {
+    content: "Deadline";
+    font-weight: 600;
+    color: var(--neutral-400);
+  }
+
+  .colStatus::before {
+    content: "Status";
+    font-weight: 600;
+    color: var(--neutral-400);
+  }
+
+  .menuWrapper {
+    position: absolute;
+    top: 10px;
+    right: 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    z-index: 10;
+  }
+
+  .colTitle {
+    position: relative;
+    padding-right: 70px;
   }
 }
 
 @media (max-width: 720px) {
-  .layout {
-    flex-direction: column;
-  }
-
-  .page {
+  .listView {
+    display: flex;
     flex-direction: column;
   }
 
@@ -708,65 +838,26 @@
     padding: 0.9rem;
   }
 
-  .taskTitle {
-    font-size: 0.98rem;
+  .listRow {
+    padding: 0.9rem;
+    gap: 0.5rem;
   }
-}
 
-.statusSelect {
-  appearance: none;
-  border-radius: 999px;
-  text-align: center;
-  text-align-last: center;
-  padding: 4px 20px 4px 20px;
-  font-size: 0.7rem;
-  font-weight: 700;
-  cursor: pointer;
-  border: 1px solid transparent;
-  outline: none;
-  display: inline-flex;
-  align-items: center;
-}
+  .taskTitle {
+    font-size: 0.95rem;
+  }
 
-.statusSelect.todoBadge {
-  color: var(--color-primary);
-  background: var(--color-primary-light);
-  border-color: var(--color-primary);
-}
+  .taskDescription {
+    font-size: 0.8rem;
+  }
 
-.statusSelect.inProgressBadge {
-  color: var(--color-accent);
-  background: var(--color-accent-light);
-  border-color: var(--color-accent);
-}
+  .statusSelect {
+    font-size: 0.65rem;
+    padding: 3px 14px;
+  }
 
-.statusSelect.doneBadge {
-  color: var(--color-secondary);
-  background: var(--color-secondary-light);
-  border-color: var(--color-secondary);
-}
-
-.statusSelect:focus {
-  box-shadow: none;
-}
-
-.statusRight {
-  margin-left: auto;
-}
-
-.statusSelect option {
-  color: initial;
-  background: white;
-  text-align: center;
-  text-align: left;
-}
-
-.statusSelect option:checked {
-  background: #e5e7eb;
-  color: black;
-}
-
-.completedText {
-  text-decoration: line-through;
-  opacity: 0.8;
+  .label,
+  .subjectLabel {
+    font-size: 0.65rem;
+  }
 }
