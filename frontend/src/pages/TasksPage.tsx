@@ -8,6 +8,9 @@ import TaskForm from "../components/TaskForm";
 import {
   type TaskItem,
   TASK_STATUS,
+  TASK_PRIORITY,
+  type TaskStatus,
+  type TaskPriority,
   type CreateTaskRequest,
 } from "../services/tasksService";
 import { useSubjects } from "../hooks/useSubjects";
@@ -15,6 +18,17 @@ import { useTasks } from "../hooks/useTasks";
 import styles from "../styles/tasks.module.css";
 
 type ViewMode = "list" | "kanban";
+
+type StatusFilter = TaskStatus | "all";
+type PriorityFilter = TaskPriority | "all";
+type SubjectFilter = string | "all";
+
+type SortOption =
+  | "none"
+  | "deadlineAsc"
+  | "deadlineDesc"
+  | "priorityAsc"
+  | "priorityDesc";
 
 export default function TasksPage() {
   const { subjects } = useSubjects();
@@ -39,6 +53,17 @@ export default function TasksPage() {
   const [isTaskFormOpen, setIsTaskFormOpen] = useState(false);
   const [editingTask, setEditingTask] = useState<TaskItem | null>(null);
   const [taskToDelete, setTaskToDelete] = useState<TaskItem | null>(null);
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
+  const [priorityFilter, setPriorityFilter] = useState<PriorityFilter>("all");
+  const [subjectFilter, setSubjectFilter] = useState<SubjectFilter>("all");
+  const [sortOption, setSortOption] = useState<SortOption>("none");
+
+  function handleResetFilters() {
+    setStatusFilter("all");
+    setPriorityFilter("all");
+    setSubjectFilter("all");
+    setSortOption("none");
+  }
 
   function handleOpenCreateForm() {
     setEditingTask(null);
@@ -144,7 +169,7 @@ export default function TasksPage() {
   }, [searchTerm]);
 
   const filteredTasks = useMemo(() => {
-    let result = tasks;
+    let result = [...tasks];
 
     if (debouncedSearch.trim()) {
       result = result.filter((task) =>
@@ -159,11 +184,65 @@ export default function TasksPage() {
       );
     }
 
-    return [...result].sort((a, b) => {
-      if (a.isPinned === b.isPinned) return 0;
-      return a.isPinned ? -1 : 1;
+    if (statusFilter !== "all") {
+      result = result.filter((task) => task.status === statusFilter);
+    }
+
+    if (priorityFilter !== "all") {
+      result = result.filter((task) => task.priority === priorityFilter);
+    }
+
+    if (subjectFilter !== "all") {
+      result = result.filter((task) => task.subjectId === subjectFilter);
+    }
+
+    return result.sort((a, b) => {
+      if ((a.isPinned ?? false) !== (b.isPinned ?? false)) {
+        return a.isPinned ? -1 : 1;
+      }
+
+      switch (sortOption) {
+        case "deadlineAsc": {
+          const aTime = a.deadline
+            ? new Date(a.deadline).getTime()
+            : Number.MAX_SAFE_INTEGER;
+          const bTime = b.deadline
+            ? new Date(b.deadline).getTime()
+            : Number.MAX_SAFE_INTEGER;
+
+          return aTime - bTime;
+        }
+
+        case "deadlineDesc": {
+          const aTime = a.deadline
+            ? new Date(a.deadline).getTime()
+            : Number.MIN_SAFE_INTEGER;
+          const bTime = b.deadline
+            ? new Date(b.deadline).getTime()
+            : Number.MIN_SAFE_INTEGER;
+
+          return bTime - aTime;
+        }
+
+        case "priorityAsc":
+          return a.priority - b.priority;
+
+        case "priorityDesc":
+          return b.priority - a.priority;
+
+        default:
+          return 0;
+      }
     });
-  }, [tasks, debouncedSearch, focusMode]);
+  }, [
+    tasks,
+    debouncedSearch,
+    focusMode,
+    statusFilter,
+    priorityFilter,
+    subjectFilter,
+    sortOption,
+  ]);
 
   const todoTasks = useMemo(
     () => filteredTasks.filter((t) => t.status === TASK_STATUS.Todo),
@@ -205,6 +284,7 @@ export default function TasksPage() {
       <div className={styles.layout}>
         <div className={styles.content}>
           <div className="container">
+            {/* 🔹 HEADER */}
             <div className={styles.header}>
               {actionError && (
                 <div className={styles.errorBanner}>{actionError}</div>
@@ -218,6 +298,7 @@ export default function TasksPage() {
               <ViewToggle viewMode={viewMode} onChange={setViewMode} />
             </div>
 
+            {/* 🔹 ACTIONS */}
             <div className={styles.actionsRow}>
               <button
                 onClick={handleOpenCreateForm}
@@ -244,29 +325,94 @@ export default function TasksPage() {
                     className={styles.searchInput}
                   />
                 </div>
-
-                <div className={styles.focusWrapper}>
-                  <div className={styles.focusButtons}>
-                    {!focusMode ? (
-                      <button onClick={() => setFocusMode(true)}>
-                        Focus Mode
-                      </button>
-                    ) : (
-                      <button onClick={() => setFocusMode(false)}>
-                        Show all
-                      </button>
-                    )}
-                  </div>
-
-                  {focusMode && (
-                    <p className={styles.focusIndicator}>
-                      Showing today's tasks
-                    </p>
-                  )}
-                </div>
               </div>
             </div>
 
+            <div className={styles.filtersRow}>
+              <select
+                value={statusFilter}
+                onChange={(e) =>
+                  setStatusFilter(
+                    e.target.value === "all"
+                      ? "all"
+                      : (Number(e.target.value) as TaskStatus),
+                  )
+                }
+                className={styles.filterSelect}
+              >
+                <option value="all">All statuses</option>
+                <option value={TASK_STATUS.Todo}>Todo</option>
+                <option value={TASK_STATUS.InProgress}>In Progress</option>
+                <option value={TASK_STATUS.Done}>Done</option>
+              </select>
+
+              <select
+                value={priorityFilter}
+                onChange={(e) =>
+                  setPriorityFilter(
+                    e.target.value === "all"
+                      ? "all"
+                      : (Number(e.target.value) as TaskPriority),
+                  )
+                }
+                className={styles.filterSelect}
+              >
+                <option value="all">All priorities</option>
+                <option value={TASK_PRIORITY.Low}>Low</option>
+                <option value={TASK_PRIORITY.Medium}>Medium</option>
+                <option value={TASK_PRIORITY.High}>High</option>
+              </select>
+
+              <select
+                value={subjectFilter}
+                onChange={(e) => setSubjectFilter(e.target.value)}
+                className={styles.filterSelect}
+              >
+                <option value="all">All subjects</option>
+                {subjects.map((subject) => (
+                  <option key={subject.id} value={subject.id}>
+                    {subject.name}
+                  </option>
+                ))}
+              </select>
+
+              <select
+                value={sortOption}
+                onChange={(e) => setSortOption(e.target.value as SortOption)}
+                className={styles.filterSelect}
+              >
+                <option value="none">No sorting</option>
+                <option value="deadlineAsc">Deadline ↑</option>
+                <option value="deadlineDesc">Deadline ↓</option>
+                <option value="priorityAsc">Priority ↑</option>
+                <option value="priorityDesc">Priority ↓</option>
+              </select>
+
+              <button
+                type="button"
+                onClick={handleResetFilters}
+                className={styles.resetFiltersButton}
+              >
+                Reset filters
+              </button>
+            </div>
+
+            <div className={styles.focusWrapper}>
+              {" "}
+              <div className={styles.focusButtons}>
+                {" "}
+                {!focusMode ? (
+                  <button onClick={() => setFocusMode(true)}>Focus Mode</button>
+                ) : (
+                  <button onClick={() => setFocusMode(false)}>Show all</button>
+                )}{" "}
+              </div>{" "}
+              {focusMode && (
+                <p className={styles.focusIndicator}>Showing today's tasks</p>
+              )}{" "}
+            </div>
+
+            {/* 🔹 TASK LIST */}
             {filteredTasks.length === 0 ? (
               <div className={styles.emptyState}>
                 <h3>No tasks yet</h3>
@@ -330,10 +476,9 @@ export default function TasksPage() {
                 ))}
               </section>
             )}
-          </div>
-        </div>
-      </div>
-
+          </div>{" "}
+        </div>{" "}
+      </div>{" "}
       {isTaskFormOpen && (
         <TaskForm
           initialTask={editingTask}
@@ -342,7 +487,6 @@ export default function TasksPage() {
           onCancel={handleCloseTaskForm}
         />
       )}
-
       {taskToDelete && (
         <DeleteTaskModal
           taskTitle={taskToDelete.title}
