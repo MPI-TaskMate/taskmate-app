@@ -280,205 +280,194 @@ export default function TasksPage() {
   }
 
   return (
-    <main className={styles.page}>
-      <div className={styles.layout}>
-        <div className={styles.content}>
-          <div className="container">
-            {/* 🔹 HEADER */}
-            <div className={styles.header}>
-              {actionError && (
-                <div className={styles.errorBanner}>{actionError}</div>
-              )}
+    <div className={styles.content}>
+      <div className={styles.header}>
+        {actionError && <div className={styles.errorBanner}>{actionError}</div>}
 
-              <div>
-                <h1>Tasks</h1>
-                <p>Manage your tasks efficiently.</p>
-              </div>
+        <div>
+          <h1>Tasks</h1>
+          <p>Manage your tasks efficiently.</p>
+        </div>
 
-              <ViewToggle viewMode={viewMode} onChange={setViewMode} />
-            </div>
+        <ViewToggle viewMode={viewMode} onChange={setViewMode} />
+      </div>
 
-            {/* 🔹 ACTIONS */}
-            <div className={styles.actionsRow}>
-              <button
-                onClick={handleOpenCreateForm}
-                className={styles.addTaskButton}
-              >
-                + Create Task
-              </button>
+      {/* 🔹 ACTIONS */}
+      <div className={styles.actionsRow}>
+        <button onClick={handleOpenCreateForm} className={styles.addTaskButton}>
+          + Create Task
+        </button>
 
-              <div className={styles.searchContainer}>
-                <div className={styles.searchWrapper}>
-                  <img
-                    src="/assets/icons/search-icon.svg"
-                    className={styles.iconDefault}
-                  />
-                  <img
-                    src="/assets/icons/search-icon-hover.svg"
-                    className={styles.iconHover}
-                  />
-                  <input
-                    type="text"
-                    placeholder="Search tasks..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className={styles.searchInput}
-                  />
-                </div>
-              </div>
-            </div>
+        <div className={styles.searchContainer}>
+          <div className={styles.searchWrapper}>
+            <img
+              src="/assets/icons/search-icon.svg"
+              className={styles.iconDefault}
+            />
+            <img
+              src="/assets/icons/search-icon-hover.svg"
+              className={styles.iconHover}
+            />
+            <input
+              type="text"
+              placeholder="Search tasks..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className={styles.searchInput}
+            />
+          </div>
+        </div>
+      </div>
 
-            <div className={styles.filtersRow}>
-              <select
-                value={statusFilter}
-                onChange={(e) =>
-                  setStatusFilter(
-                    e.target.value === "all"
-                      ? "all"
-                      : (Number(e.target.value) as TaskStatus),
-                  )
-                }
-                className={styles.filterSelect}
-              >
-                <option value="all">All statuses</option>
-                <option value={TASK_STATUS.Todo}>Todo</option>
-                <option value={TASK_STATUS.InProgress}>In Progress</option>
-                <option value={TASK_STATUS.Done}>Done</option>
-              </select>
+      <div className={styles.filtersRow}>
+        <select
+          value={statusFilter}
+          onChange={(e) =>
+            setStatusFilter(
+              e.target.value === "all"
+                ? "all"
+                : (Number(e.target.value) as TaskStatus),
+            )
+          }
+          className={styles.filterSelect}
+        >
+          <option value="all">All statuses</option>
+          <option value={TASK_STATUS.Todo}>Todo</option>
+          <option value={TASK_STATUS.InProgress}>In Progress</option>
+          <option value={TASK_STATUS.Done}>Done</option>
+        </select>
 
-              <select
-                value={priorityFilter}
-                onChange={(e) =>
-                  setPriorityFilter(
-                    e.target.value === "all"
-                      ? "all"
-                      : (Number(e.target.value) as TaskPriority),
-                  )
-                }
-                className={styles.filterSelect}
-              >
-                <option value="all">All priorities</option>
-                <option value={TASK_PRIORITY.Low}>Low</option>
-                <option value={TASK_PRIORITY.Medium}>Medium</option>
-                <option value={TASK_PRIORITY.High}>High</option>
-              </select>
+        <select
+          value={priorityFilter}
+          onChange={(e) =>
+            setPriorityFilter(
+              e.target.value === "all"
+                ? "all"
+                : (Number(e.target.value) as TaskPriority),
+            )
+          }
+          className={styles.filterSelect}
+        >
+          <option value="all">All priorities</option>
+          <option value={TASK_PRIORITY.Low}>Low</option>
+          <option value={TASK_PRIORITY.Medium}>Medium</option>
+          <option value={TASK_PRIORITY.High}>High</option>
+        </select>
 
-              <select
-                value={subjectFilter}
-                onChange={(e) => setSubjectFilter(e.target.value)}
-                className={styles.filterSelect}
-              >
-                <option value="all">All subjects</option>
-                {subjects.map((subject) => (
-                  <option key={subject.id} value={subject.id}>
-                    {subject.name}
-                  </option>
-                ))}
-              </select>
+        <select
+          value={subjectFilter}
+          onChange={(e) => setSubjectFilter(e.target.value)}
+          className={styles.filterSelect}
+        >
+          <option value="all">All subjects</option>
+          {subjects.map((subject) => (
+            <option key={subject.id} value={subject.id}>
+              {subject.name}
+            </option>
+          ))}
+        </select>
 
-              <select
-                value={sortOption}
-                onChange={(e) => setSortOption(e.target.value as SortOption)}
-                className={styles.filterSelect}
-              >
-                <option value="none">No sorting</option>
-                <option value="deadlineAsc">Deadline ↑</option>
-                <option value="deadlineDesc">Deadline ↓</option>
-                <option value="priorityAsc">Priority ↑</option>
-                <option value="priorityDesc">Priority ↓</option>
-              </select>
+        <select
+          value={sortOption}
+          onChange={(e) => setSortOption(e.target.value as SortOption)}
+          className={styles.filterSelect}
+        >
+          <option value="none">No sorting</option>
+          <option value="deadlineAsc">Deadline ↑</option>
+          <option value="deadlineDesc">Deadline ↓</option>
+          <option value="priorityAsc">Priority ↑</option>
+          <option value="priorityDesc">Priority ↓</option>
+        </select>
 
-              <button
-                type="button"
-                onClick={handleResetFilters}
-                className={styles.resetFiltersButton}
-              >
-                Reset filters
-              </button>
-            </div>
+        <button
+          type="button"
+          onClick={handleResetFilters}
+          className={styles.resetFiltersButton}
+        >
+          Reset filters
+        </button>
+      </div>
 
-            <div className={styles.focusWrapper}>
-              {" "}
-              <div className={styles.focusButtons}>
-                {" "}
-                {!focusMode ? (
-                  <button onClick={() => setFocusMode(true)}>Focus Mode</button>
-                ) : (
-                  <button onClick={() => setFocusMode(false)}>Show all</button>
-                )}{" "}
-              </div>{" "}
-              {focusMode && (
-                <p className={styles.focusIndicator}>Showing today's tasks</p>
-              )}{" "}
-            </div>
-
-            {/* 🔹 TASK LIST */}
-            {filteredTasks.length === 0 ? (
-              <div className={styles.emptyState}>
-                <h3>No tasks yet</h3>
-                <p>Start by adding your first task.</p>
-              </div>
-            ) : viewMode === "kanban" ? (
-              <DndContext
-                collisionDetection={closestCenter}
-                onDragEnd={handleDragEnd}
-              >
-                <section className={styles.kanbanBoard}>
-                  <KanbanColumn
-                    title="Todo"
-                    status={TASK_STATUS.Todo}
-                    tasks={todoTasks}
-                    subjects={subjects}
-                    onPinToggle={handlePinToggle}
-                    onEdit={handleOpenEditForm}
-                    onDelete={handleDeleteTask}
-                  />
-                  <KanbanColumn
-                    title="In Progress"
-                    status={TASK_STATUS.InProgress}
-                    tasks={inProgressTasks}
-                    subjects={subjects}
-                    onPinToggle={handlePinToggle}
-                    onEdit={handleOpenEditForm}
-                    onDelete={handleDeleteTask}
-                  />
-                  <KanbanColumn
-                    title="Done"
-                    status={TASK_STATUS.Done}
-                    tasks={doneTasks}
-                    subjects={subjects}
-                    onPinToggle={handlePinToggle}
-                    onEdit={handleOpenEditForm}
-                    onDelete={handleDeleteTask}
-                  />
-                </section>
-              </DndContext>
-            ) : (
-              <section className={styles.listView}>
-                <div className={styles.listHeader}>
-                  <span>Task</span>
-                  <span>Subject</span>
-                  <span>Priority</span>
-                  <span>Deadline</span>
-                  <span>Status</span>
-                  <span></span>
-                </div>
-
-                {filteredTasks.map((task) => (
-                  <TaskListItem
-                    key={task.id}
-                    task={task}
-                    subjects={subjects}
-                    onPinToggle={handlePinToggle}
-                    onEdit={handleOpenEditForm}
-                    onDelete={handleDeleteTask}
-                  />
-                ))}
-              </section>
-            )}
-          </div>{" "}
+      <div className={styles.focusWrapper}>
+        {" "}
+        <div className={styles.focusButtons}>
+          {" "}
+          {!focusMode ? (
+            <button onClick={() => setFocusMode(true)}>Focus Mode</button>
+          ) : (
+            <button onClick={() => setFocusMode(false)}>Show all</button>
+          )}{" "}
         </div>{" "}
-      </div>{" "}
+        {focusMode && (
+          <p className={styles.focusIndicator}>Showing today's tasks</p>
+        )}{" "}
+      </div>
+
+      {/* 🔹 TASK LIST */}
+      {filteredTasks.length === 0 ? (
+        <div className={styles.emptyState}>
+          <h3>No tasks yet</h3>
+          <p>Start by adding your first task.</p>
+        </div>
+      ) : viewMode === "kanban" ? (
+        <DndContext
+          collisionDetection={closestCenter}
+          onDragEnd={handleDragEnd}
+        >
+          <section className={styles.kanbanBoard}>
+            <KanbanColumn
+              title="Todo"
+              status={TASK_STATUS.Todo}
+              tasks={todoTasks}
+              subjects={subjects}
+              onPinToggle={handlePinToggle}
+              onEdit={handleOpenEditForm}
+              onDelete={handleDeleteTask}
+            />
+            <KanbanColumn
+              title="In Progress"
+              status={TASK_STATUS.InProgress}
+              tasks={inProgressTasks}
+              subjects={subjects}
+              onPinToggle={handlePinToggle}
+              onEdit={handleOpenEditForm}
+              onDelete={handleDeleteTask}
+            />
+            <KanbanColumn
+              title="Done"
+              status={TASK_STATUS.Done}
+              tasks={doneTasks}
+              subjects={subjects}
+              onPinToggle={handlePinToggle}
+              onEdit={handleOpenEditForm}
+              onDelete={handleDeleteTask}
+            />
+          </section>
+        </DndContext>
+      ) : (
+        <section className={styles.listView}>
+          <div className={styles.listHeader}>
+            <span>Task</span>
+            <span>Subject</span>
+            <span>Priority</span>
+            <span>Deadline</span>
+            <span>Status</span>
+            <span></span>
+          </div>
+
+          {filteredTasks.map((task) => (
+            <TaskListItem
+              key={task.id}
+              task={task}
+              subjects={subjects}
+              onPinToggle={handlePinToggle}
+              onEdit={handleOpenEditForm}
+              onDelete={handleDeleteTask}
+            />
+          ))}
+        </section>
+      )}
+
       {isTaskFormOpen && (
         <TaskForm
           initialTask={editingTask}
@@ -494,6 +483,6 @@ export default function TasksPage() {
           onCancel={handleCloseDeleteModal}
         />
       )}
-    </main>
+    </div>
   );
 }

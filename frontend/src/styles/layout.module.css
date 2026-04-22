@@ -1,12 +1,17 @@
 .layout {
   display: flex;
   min-height: 100vh;
-  flex-direction: row;
+  background:
+    linear-gradient(var(--neutral-200) 1px, transparent 1px),
+    linear-gradient(90deg, var(--neutral-200) 1px, transparent 1px);
+  background-size: 40px 40px;
 }
 
 .main {
   flex: 1;
-  padding: 20px;
+  min-width: 0; /* 🔥 obligatoriu */
+  display: flex; /* 🔥 ca să lase contentul să crească */
+  flex-direction: column;
 }
 
 .mobileHeader {
