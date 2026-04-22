@@ -3,13 +3,20 @@ import { useTasks } from "../hooks/useTasks";
 import { useDraggable } from "@dnd-kit/core";
 import styles from "../styles/tasks.module.css";
 import { type Subject } from "../services/subjectsService";
+import { getDeadlineStatus, formatDate } from "../utils/dateUtils";
+
 import {
   type TaskItem,
-  type TaskPriority,
   type TaskStatus,
   TASK_STATUS,
 } from "../services/tasksService";
-import { getDeadlineStatus, formatDate } from "../utils/dateUtils";
+
+import {
+  getPriorityClass,
+  getPriorityLabel,
+  getStatusClass,
+  formatHours,
+} from "../utils/taskUtils";
 
 type TaskCardProps = {
   task: TaskItem;
@@ -181,45 +188,3 @@ export default function TaskCard({
   );
 }
 
-function formatHours(hours: number) {
-  return Number.isInteger(hours) ? String(hours) : hours.toFixed(2).replace(/\.?0+$/, "");
-}
-
-function getPriorityClass(priority: TaskPriority) {
-  switch (priority) {
-    case 0:
-      return styles.priorityLow;
-    case 1:
-      return styles.priorityMedium;
-    case 2:
-      return styles.priorityHigh;
-    default:
-      return "";
-  }
-}
-
-function getPriorityLabel(priority: TaskPriority) {
-  switch (priority) {
-    case 0:
-      return "Low";
-    case 1:
-      return "Medium";
-    case 2:
-      return "High";
-    default:
-      return "";
-  }
-}
-
-function getStatusClass(status: TaskStatus) {
-  switch (status) {
-    case TASK_STATUS.Todo:
-      return styles.todoBadge;
-    case TASK_STATUS.InProgress:
-      return styles.inProgressBadge;
-    case TASK_STATUS.Done:
-      return styles.doneBadge;
-    default:
-      return "";
-  }
-}

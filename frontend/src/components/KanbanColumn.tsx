@@ -7,6 +7,7 @@ import {
 } from "../services/tasksService";
 import TaskCard from "./TaskCard";
 import QuickAddTask from "./QuickAddTask";
+import { getColumnClass } from "../utils/taskUtils";
 
 type KanbanColumnProps = {
   title: string;
@@ -64,17 +65,4 @@ export default function KanbanColumn({
       </div>
     </section>
   );
-}
-
-function getColumnClass(title: string) {
-  switch (title) {
-    case "Todo":
-      return styles.todoColumn;
-    case "In Progress":
-      return styles.inProgressColumn;
-    case "Done":
-      return styles.doneColumn;
-    default:
-      return "";
-  }
 }
