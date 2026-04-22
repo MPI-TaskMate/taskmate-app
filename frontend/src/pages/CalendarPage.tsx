@@ -9,25 +9,17 @@ export default function CalendarPage() {
   if (error) return <p>{error}</p>;
 
   return (
-    <main className={styles.page}>
-      <div className={styles.layout}>
-        <div className={styles.content}>
-          <div className="container">
-
-            <div className={styles.header}>
-              <div>
-                <h1>Calendar</h1>
-                <p>View your tasks by deadline.</p>
-              </div>
-            </div>
-
-            <div className={styles.calendarWrapper}>
-              <TaskCalendar tasks={tasks} />
-            </div>
-
-          </div>
+    <div className={styles.content}>
+      <div className={styles.header}>
+        <div>
+          <h1>Calendar</h1>
+          <p>View your tasks by deadline.</p>
         </div>
       </div>
-    </main>
+
+      <div className={styles.calendarWrapper}>
+        <TaskCalendar tasks={tasks} />
+      </div>
+    </div>
   );
 }

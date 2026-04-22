@@ -1,0 +1,67 @@
+.layout {
+  display: flex;
+  min-height: 100vh;
+  background:
+    linear-gradient(var(--neutral-200) 1px, transparent 1px),
+    linear-gradient(90deg, var(--neutral-200) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+.main {
+  flex: 1;
+  min-width: 0; /* 🔥 obligatoriu */
+  display: flex; /* 🔥 ca să lase contentul să crească */
+  flex-direction: column;
+}
+
+.mobileHeader {
+  display: none;
+}
+
+@media (max-width: 1024px) {
+  .main {
+    padding: 16px;
+  }
+}
+
+@media (max-width: 768px) {
+  .layout {
+    flex-direction: column;
+  }
+
+  .mobileHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    background: var(--color-primary);
+    color: var(--neutral-50);
+    position: sticky;
+    top: 0;
+    z-index: 1100;
+  }
+
+  .mobileHeader h2 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+  }
+
+  .mobileHeader button {
+    width: 28px;
+    height: 22px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
+
+  .mobileHeader button span {
+    height: 3px;
+    width: 100%;
+    background: var(--neutral-50);
+    border-radius: 2px;
+  }
+}

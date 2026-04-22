@@ -1,22 +1,9 @@
-.page {
-  min-height: 100vh;
-  display: flex;
-  background:
-    linear-gradient(var(--neutral-200) 1px, transparent 1px),
-    linear-gradient(90deg, var(--neutral-200) 1px, transparent 1px);
-  background-size: 40px 40px;
-}
-
-.layout {
-  display: flex;
-  flex: 1;
-}
-
 .content {
   flex: 1;
   display: flex;
   flex-direction: column;
-  padding: 2rem;
+  padding: 2rem 4rem;
+  width: 100%;
 }
 
 .header {
@@ -299,6 +286,7 @@
   grid-template-columns: repeat(3, minmax(260px, 1fr));
   gap: 1.25rem;
   align-items: start;
+  width: 100%;
 }
 
 .column {
