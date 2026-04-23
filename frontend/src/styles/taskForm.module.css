@@ -78,7 +78,6 @@
   outline: none;
   border-color: var(--color-primary);
   background: #ffffff;
-  box-shadow: 0 0 0 3px rgba(79, 159, 209, 0.15);
 }
 
 .field textarea {
@@ -186,7 +185,7 @@
   }
 
   .form {
-    padding-bottom: 100px; 
+    padding-bottom: 100px;
   }
 
   .primaryButton,
