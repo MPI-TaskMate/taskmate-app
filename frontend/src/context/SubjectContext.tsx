@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
+import { useAuth } from "../hooks/useAuth";
 import { SubjectContext } from "./SubjectContextDefinition";
+
 import {
   getSubjects,
   createSubject,
@@ -8,14 +10,17 @@ import {
 } from "../services/subjectsService";
 
 export function SubjectProvider({ children }: { children: React.ReactNode }) {
+  const { token } = useAuth();
   const [subjects, setSubjects] = useState<Subject[]>([]);
   const [subjectError, setSubjectError] = useState("");
 
   useEffect(() => {
+    if (!token) return; 
+
     getSubjects()
       .then(setSubjects)
       .catch(() => setSubjectError("Failed to load subjects."));
-  }, []);
+  }, [token]);
 
   async function addSubject(name: string, color: string) {
     if (!name.trim()) {

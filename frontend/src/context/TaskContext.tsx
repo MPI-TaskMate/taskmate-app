@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { TaskContext } from "./TaskContextDefinition";
+import { useAuth } from "../hooks/useAuth";
 
 import {
   getTasks,
@@ -15,9 +16,16 @@ import {
 } from "../services/tasksService";
 
 export function TaskProvider({ children }: { children: React.ReactNode }) {
+  const { token } = useAuth();
   const [tasks, setTasks] = useState<TaskItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    if (!token) return;
+
+    refreshTasks();
+  }, [token]);
 
   async function refreshTasks() {
     try {
@@ -67,10 +75,6 @@ export function TaskProvider({ children }: { children: React.ReactNode }) {
     await deleteTask(id);
     setTasks((prev) => prev.filter((t) => t.id !== id));
   }
-
-  useEffect(() => {
-    refreshTasks();
-  }, []);
 
   return (
     <TaskContext.Provider
