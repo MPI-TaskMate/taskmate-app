@@ -383,7 +383,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-top: 20px;
+  margin-top: 13px;
 }
 
 .labelsRow {
@@ -466,7 +466,7 @@
   border-radius: 999px;
   text-align: center;
   text-align-last: center;
-  padding: 4px 20px 4px 20px;
+  padding: 4px 10px 4px 10px;
   font-size: 0.7rem;
   font-weight: 700;
   cursor: pointer;

@@ -23,14 +23,13 @@ export default function Sidebar({
 }: Props) {
   const [newName, setNewName] = useState("");
   const [newColor, setNewColor] = useState("#4f9fd1");
-  const [showAdd, setShowAdd] = useState(false);
+  const [subjectsOpen, setSubjectsOpen] = useState(true);
 
   const { logout } = useAuth();
 
   function handleAddClick() {
     onAdd(newName, newColor);
     setNewName("");
-    setShowAdd(false);
   }
 
   return (
@@ -42,7 +41,7 @@ export default function Sidebar({
       <aside
         className={`${styles.sidebar} ${isOpen ? styles.sidebarOpen : ""}`}
       >
-        <h3 className={styles.sidebarTitle}>Navigation</h3>
+        <div className={styles.logo}>TaskMate</div>
 
         <div className={styles.navSection}>
           <NavLink
@@ -52,6 +51,12 @@ export default function Sidebar({
               `${styles.navItem} ${isActive ? styles.navItemActive : ""}`
             }
           >
+            <span
+              className={styles.navIcon}
+              style={{
+                WebkitMaskImage: "url(/assets/icons/dashboard-icon.svg)",
+              }}
+            />
             Dashboard
           </NavLink>
 
@@ -63,6 +68,10 @@ export default function Sidebar({
               `${styles.navItem} ${isActive ? styles.navItemActive : ""}`
             }
           >
+            <span
+              className={styles.navIcon}
+              style={{ WebkitMaskImage: "url(/assets/icons/tasks-icon.svg)" }}
+            />
             Tasks
           </NavLink>
 
@@ -73,75 +82,85 @@ export default function Sidebar({
               `${styles.navItem} ${isActive ? styles.navItemActive : ""}`
             }
           >
+            <span
+              className={styles.navIcon}
+              style={{
+                WebkitMaskImage: "url(/assets/icons/calendar-icon.svg)",
+              }}
+            />
             Calendar
           </NavLink>
         </div>
 
         <div className={styles.divider} />
 
-        <h3 className={styles.sidebarTitle}>Subjects</h3>
-
-        <div className={styles.subjectList}>
-          <div className={styles.subjectRow}>All</div>
-
-          {subjects.map((s) => (
-            <div key={s.id} className={styles.subjectRow}>
-              <div className={styles.subjectLeft}>
-                <span
-                  className={styles.tagIcon}
-                  style={{ backgroundColor: s.color || "#94a3b8" }}
-                />
-                <span>{s.name}</span>
-              </div>
-
-              <button
-                className={styles.deleteBtn}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onDelete(s.id);
-                }}
-              >
-                ×
-              </button>
-            </div>
-          ))}
-        </div>
-
-        <button
-          className={styles.addTagButton}
-          onClick={() => setShowAdd((prev) => !prev)}
-        >
-          + Add tag
-        </button>
-
-        {showAdd && (
-          <div className={styles.quickAdd}>
-            <input
-              type="text"
-              value={newName}
-              onChange={(e) => setNewName(e.target.value)}
-              placeholder="Subject name"
-            />
-
-            <input
-              type="color"
-              value={newColor}
-              onChange={(e) => setNewColor(e.target.value)}
-            />
-
-            <button className={styles.quickAddAdd} onClick={handleAddClick}>
-              +
-            </button>
+        <div className={styles.subjectsContainer}>
+          <div
+            className={styles.subjectHeader}
+            onClick={() => setSubjectsOpen((prev) => !prev)}
+          >
+            <span>Subjects</span>
+            <span className={styles.chevron}>{subjectsOpen ? "▾" : "▸"}</span>
           </div>
-        )}
+
+          {subjectsOpen && (
+            <>
+              <div className={styles.subjectCard}>
+                {subjects.map((s) => (
+                  <div key={s.id} className={styles.subjectRow}>
+                    <div className={styles.subjectLeft}>
+                      <span
+                        className={styles.tagIcon}
+                        style={{ backgroundColor: s.color || "#94a3b8" }}
+                      />
+                      <span>{s.name}</span>
+                    </div>
+
+                    <button
+                      className={styles.deleteBtn}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onDelete(s.id);
+                      }}
+                    >
+                      ×
+                    </button>
+                  </div>
+                ))}
+
+                <div className={styles.quickAdd}>
+                  <input
+                    type="text"
+                    value={newName}
+                    onChange={(e) => setNewName(e.target.value)}
+                    placeholder="+ Add tag"
+                  />
+
+                  <input
+                    type="color"
+                    value={newColor}
+                    onChange={(e) => setNewColor(e.target.value)}
+                  />
+
+                  <button
+                    className={styles.quickAddAdd}
+                    onClick={handleAddClick}
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+            </>
+          )}
+        </div>
 
         {subjectError && <p className={styles.errorText}>{subjectError}</p>}
 
         <div className={styles.logoutWrapper}>
-          <button className={styles.logoutButton} onClick={logout}>
+          <div className={styles.logoutItem} onClick={logout}>
             <span className={styles.logoutIcon}>↩</span>
-            Log Out
-          </button>
+            <span>Log out</span>
+          </div>
         </div>
       </aside>
     </>

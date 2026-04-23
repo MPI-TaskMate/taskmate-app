@@ -11,12 +11,12 @@
   flex-shrink: 0;
 }
 
-.sidebarTitle {
-  font-size: 1rem;
-  letter-spacing: 1px;
+.logo {
+  font-family: var(--font-brand);
+  font-size: 15px;
   font-weight: 700;
-  color: var(--neutral-50);
-  margin-bottom: 16px;
+  letter-spacing: 1px;
+  margin-bottom: 32px;
 }
 
 .navSection {
@@ -33,23 +33,86 @@
 }
 
 .navItem {
-  padding: 6px 8px;
-  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 20px;
   color: var(--neutral-50);
   text-decoration: none;
   font-weight: 500;
-  transition: all 0.2s ease;
+  transition: all 0.25s ease;
 }
 
 .navItem:hover {
-  background: rgba(255, 255, 255, 0.12);
+  background: var(--neutral-50);
+  color: var(--color-primary);
+  transform: translateX(2px);
+}
+
+.navIcon {
+  width: 18px;
+  height: 18px;
+  background-color: var(--neutral-50);
+  mask-size: contain;
+  mask-repeat: no-repeat;
+  mask-position: center;
+  -webkit-mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  transition: all 0.25s ease;
+}
+
+.navItem:hover {
+  background: var(--neutral-50);
+  color: var(--color-primary);
+  transform: translateX(2px);
+}
+
+.navItem:hover .navIcon {
+  background-color: var(--color-primary);
 }
 
 .navItemActive {
-  background: rgba(255, 255, 255, 0.12);
-  color: white;
-  font-weight: 600;
-  border-radius: 8px;
+  background: var(--neutral-50);
+  color: var(--color-primary);
+  transform: translateX(2px);
+}
+
+.navItemActive .navIcon {
+  background-color: var(--color-primary);
+}
+
+.subjectsContainer {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.subjectHeader:hover {
+  opacity: 0.8;
+}
+
+.subjectHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.2s ease;
+}
+
+.subjectCard {
+  background: rgba(255, 255, 255, 0.08);
+  padding: 10px;
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
 .subjectList {
@@ -62,8 +125,8 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 6px 8px;
-  border-radius: 8px;
+  padding: 8px 10px;
+  border-radius: 10px;
   cursor: pointer;
   transition: all 0.2s ease;
 }
@@ -103,13 +166,13 @@
 }
 
 .quickAdd {
-  margin-top: 8px;
+  margin-top: 6px;
   display: flex;
   align-items: center;
   gap: 6px;
-  background: var(--neutral-50);
-  padding: 6px;
-  border-radius: 8px;
+  padding: 6px 8px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.08);
 }
 
 .quickAdd input {
@@ -120,22 +183,29 @@
 .quickAdd input[type="text"] {
   flex: 1;
   min-width: 0;
+  background: transparent;
   border: none;
   outline: none;
-  background: transparent;
-  font-size: 0.85rem;
-  padding: 6px 4px;
+  font-size: 0.95rem;
+  padding: 6px 10px;
+  color: var(--neutral-50);
+  opacity: 0.9;
+}
+
+.quickAdd input::placeholder {
+  color: rgba(255, 255, 255, 0.6);
+  font-weight: 400;
 }
 
 .quickAdd input[type="color"] {
-  width: 30px;
-  height: 20px;
+  width: 28px;
+  height: 28px;
   border: none;
-  padding: 0;
-  background: none;
-  cursor: pointer;
   border-radius: 50%;
   overflow: hidden;
+  cursor: pointer;
+  padding: 0;
+  background: none;
 }
 
 .quickAdd input[type="color"]::-webkit-color-swatch-wrapper {
@@ -155,17 +225,17 @@
 .quickAddAdd {
   width: 30px;
   height: 30px;
-  border-radius: 8px;
+  border-radius: 50%;
   border: none;
-  background: var(--color-primary);
+  background: rgba(255, 255, 255, 0.2);
   color: var(--neutral-50);
-  font-size: 18px;
-  font-weight: 700;
-  cursor: pointer;
+  font-size: 16px;
+  font-weight: 600;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.15s ease;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
 .quickAddAdd:hover {
@@ -194,41 +264,40 @@
 
 .errorText {
   font-size: 0.9rem;
-  color: #ef4444;
+  color: var(--priority-high-text);
   margin-top: 6px;
   padding-left: 2px;
 }
 
 .logoutWrapper {
   margin-top: auto;
-  padding: 20px 0;
-  display: flex;
-  justify-content: flex-start; 
+  padding: 16px 8px;
 }
 
-.logoutButton {
-  width: fit-content; 
+.logoutItem {
   display: flex;
   align-items: center;
-  justify-content: center;
   gap: 10px;
-  padding: 14px 20px;
-  background: var(--color-primary);
-  border: none;
+
+  padding: 10px 12px;
   border-radius: 12px;
+
   color: var(--neutral-50);
-  font-size: 16px;
+  font-size: 0.95rem;
   font-weight: 500;
+
   cursor: pointer;
+  transition: all 0.2s ease;
 }
 
-.logoutButton:hover {
-  opacity: 0.9;
-  transform: translateY(-1px);
+.logoutItem:hover {
+  background: rgba(255, 255, 255, 0.12);
+  transform: translateX(2px);
 }
 
 .logoutIcon {
-  font-size: 18px;
+  font-size: 16px;
+  opacity: 0.8;
 }
 
 @media (max-width: 1024px) {
