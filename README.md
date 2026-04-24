@@ -87,7 +87,7 @@ docker compose up --build
 
 ---
 
-### 3. Access the application
+### 3. Access the application (Local Development)
 
 * Frontend: http://localhost:5173
 * Backend API: http://localhost:8080
@@ -122,4 +122,39 @@ The backend uses ASP.NET Core built-in logging.
 
 ## Production
 
-Production configuration and URLs will be added after deployment is implemented.
+The application is deployed as a full-stack solution using cloud services.
+
+### Frontend (Vercel)
+
+The frontend is deployed on Vercel and automatically builds and deploys on each push to the repository.
+
+### Backend (Railway)
+
+The backend API is deployed on Railway using Docker and connects to the production database.
+
+### Database (Azure SQL)
+
+The production database is hosted on Azure SQL and is accessed by the backend through environment variables.
+
+---
+
+### Environment Variables (Production)
+
+#### Backend (Railway):
+
+- ConnectionStrings__DefaultConnection
+- JWT__Key
+- JWT__Issuer
+- JWT__Audience
+
+#### Frontend (Vercel):
+
+- VITE_API_URL
+
+---
+
+## Access the application (Production)
+
+* Frontend: https://taskmate-app-weld.vercel.app
+* Backend: https://taskmate-app-production.up.railway.app
+* Swagger: https://taskmate-app-production.up.railway.app/swagger
